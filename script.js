@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
 
     const world = Globe()(globeContainer)
-        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-day.jpg')
+        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
         .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
         .backgroundColor('rgba(0,0,0,0)')
         .showAtmosphere(true)
