@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Nathalya & Pierre — 14 août 2027</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nathalya &amp; Pierre se marient le 14 août 2027. Retrouvez notre histoire, les infos pratiques et confirmez votre présence.">
+
+    <!-- Open Graph : belle prévisualisation quand le lien est partagé -->
+    <meta property="og:title" content="Nathalya & Pierre se marient !">
+    <meta property="og:description" content="Rendez-vous le 14 août 2027 pour célébrer notre mariage.">
+    <meta property="og:image" content="images/algarve-2025.jpeg">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Favicon (coeur simple en SVG) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='24' font-size='24'%3E%F0%9F%A4%8D%3C/text%3E%3C/svg%3E">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Nathalya & Pierre</h1>
+
+    <nav>
+        <a href="#" class="nav-link active" data-tab="home" onclick="showTab('home'); return false;"
+           data-fr="Accueil"
+           data-es="Inicio">Accueil</a>
+
+        <a href="#" class="nav-link" data-tab="story" onclick="showTab('story'); return false;"
+           data-fr="Notre histoire"
+           data-es="Nuestra historia">Notre histoire</a>
+
+        <a href="#" class="nav-link" data-tab="dates" onclick="showTab('dates'); return false;"
+           data-fr="Les dates"
+           data-es="Fechas importantes">Les dates</a>
+
+        <a href="#" class="nav-link" data-tab="rsvp" onclick="showTab('rsvp'); return false;"
+           data-fr="RSVP"
+           data-es="RSVP">RSVP</a>
+    </nav>
+
+    <div class="lang-switch">
+        <button type="button" class="lang-btn active" data-lang="fr" onclick="setLang('fr')">FR</button>
+        <button type="button" class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
+    </div>
+</header>
+
+<!-- 🟣 HERO BANDE DÉFILANTE PLEIN ÉCRAN -->
+<section id="home" class="hero active">
+    <div class="hero-band"></div>
+
+    <div class="hero-overlay">
+        <h2 data-fr="Nous nous marions !"
+            data-es="¡Nos casamos!">
+            Nous nous marions !
+        </h2>
+
+        <p class="hero-date"
+           data-fr="14 août 2027"
+           data-es="14 agosto 2027">
+           14 août 2027
+        </p>
+
+        <!-- Compte à rebours -->
+        <div class="countdown" id="countdown" aria-live="polite">
+            <div class="countdown-item">
+                <span class="countdown-number" id="cd-days">0</span>
+                <span class="countdown-label" data-fr="jours" data-es="días">jours</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="cd-hours">0</span>
+                <span class="countdown-label" data-fr="heures" data-es="horas">heures</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="cd-minutes">0</span>
+                <span class="countdown-label" data-fr="min" data-es="min">min</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="cd-seconds">0</span>
+                <span class="countdown-label" data-fr="sec" data-es="seg">sec</span>
+            </div>
+        </div>
+
+        <button type="button"
+            class="cta-btn"
+            data-fr="RSVP - Confirmer ma présence"
+            data-es="RSVP - Confirmar asistencia"
+            onclick="showTab('rsvp')">
+            RSVP - Confirmer ma présence
+        </button>
+    </div>
+</section>
+
+<section id="map-journey" class="reveal">
+    <h2 data-fr="Notre map monde" data-es="Nuestro mapa del mundo">Notre Map Monde</h2>
+
+    <div class="globe-wrapper">
+        <div id="globe-container"></div>
+
+        <div id="city-info" class="city-info">
+            <h3 data-fr="Clique sur une ville" data-es="Haz clic en una ciudad">Clique sur une ville</h3>
+            <p>Montpellier · Madrid · Sevilla · Quito</p>
+        </div>
+    </div>
+</section>
+
+
+<section id="story" class="tab reveal">
+    <h2 data-fr="Notre histoire" data-es="Nuestra historia">Notre histoire</h2>
+
+    <p class="story-intro"
+       data-fr="Quelques moments importants qui ont façonné notre histoire d'amour, entre l'Équateur, l'Espagne, le Portugal… et Toffee-Topito."
+       data-es="Algunos momentos importantes que marcaron nuestra historia de amor, entre Ecuador, España, Portugal… y Toffee-Topito.">
+        Quelques moments importants qui ont façonné notre histoire d'amour, entre l'Équateur, l'Espagne, le Portugal… et Toffee-Topito.
+    </p>
+
+    <div class="timeline">
+
+        <!-- 1. Rencontre Quito Ecuador 2019 (gauche) -->
+        <div class="timeline-item left">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-date">2019 · Quito, Ecuador</span>
+                <h3 data-fr="Notre rencontre" data-es="Nuestro encuentro">Notre rencontre</h3>
+                <p data-fr="Tout commence à Quito. Deux vies, deux pays, une rencontre qui change tout."
+                   data-es="Todo empieza en Quito. Dos vidas, dos países, un encuentro que lo cambia todo.">
+                    Tout commence à Quito. Deux vies, deux pays, une rencontre qui change tout.
+                </p>
+                <figure class="timeline-photo">
+                    <img src="images/quito-2019.jpeg" alt="Pierre et Nathalya à Quito en 2019" loading="lazy">
+                    <figcaption>Quito · Nos premiers souvenirs ensemble</figcaption>
+                </figure>
+            </div>
+        </div>
+
+        <!-- 2. Madrid - España 2021 (droite) -->
+        <div class="timeline-item right">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-date">2021 · Madrid, España</span>
+                <h3 data-fr="Madrid, une nouvelle étape" data-es="Madrid, una nueva etapa">Madrid, une nouvelle étape</h3>
+                <p data-fr="Madrid devient un de nos points de repère, entre rires, balades et projets qui se dessinent."
+                   data-es="Madrid se convierte en uno de nuestros puntos de referencia, entre risas, paseos y proyectos que van tomando forma.">
+                    Madrid devient un de nos points de repère, entre rires, balades et projets qui se dessinent.
+                </p>
+                <figure class="timeline-photo">
+                    <img src="images/madrid-2021.jpeg" alt="Moment de couple à Madrid en 2021" loading="lazy">
+                    <figcaption>Madrid · Terrasses, balades et projets à deux</figcaption>
+                </figure>
+            </div>
+        </div>
+
+        <!-- 3. Ecuador 2023 Rencontre Famille Nathalya Pierre (gauche) -->
+        <div class="timeline-item left">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-date">2023 · Voyage en Équateur</span>
+                <h3 data-fr="Rencontre des familles" data-es="Encuentro de las familias">Rencontre des familles</h3>
+                <p data-fr="La rencontre avec la famille de Nathalya."
+                   data-es="El encuentro con la familia de Nathalya.">
+                    La rencontre avec la famille de Nathalya.
+                </p>
+                <figure class="timeline-photo">
+                    <img src="images/famille-ecuador-2023.jpeg" alt="Rencontre de la famille en Équateur en 2023" loading="lazy">
+                    <figcaption>Équateur · La famille réunie autour de nous</figcaption>
+                </figure>
+            </div>
+        </div>
+
+        <!-- 4. Sevilla España 2023 (droite) -->
+        <div class="timeline-item right">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-date">2023 · Installation à Séville, España</span>
+                <h3 data-fr="Séville, ville de lumière" data-es="Sevilla, ciudad de luz">Séville, ville de lumière</h3>
+                <p data-fr="Séville et l'Andalousie nous voilà ! Une nouvelle aventure commence."
+                   data-es="¡Sevilla y Andalucía, aquí estamos! Comienza una nueva aventura.">
+                    Séville et l'Andalousie nous voilà ! Une nouvelle aventure commence.
+                </p>
+                <figure class="timeline-photo">
+                    <img src="images/sevilla-2023.jpeg" alt="Installation à Séville en 2023" loading="lazy">
+                    <figcaption>Séville · Entre flamenco, soleil et complicité</figcaption>
+                </figure>
+            </div>
+        </div>
+
+        <!-- 5. Adoption Toffee-Topito 2024 (gauche) -->
+        <div class="timeline-item left">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-date">2024</span>
+                <h3 data-fr="Adoption de Toffee-Topito" data-es="Adopción de Toffee-Topito">Adoption de Toffee-Topito</h3>
+                <p data-fr="La famille s'agrandit avec Toffee-Topito."
+                   data-es="La familia crece con Toffee-Topito.">
+                    La famille s'agrandit avec Toffee-Topito.
+                </p>
+                <figure class="timeline-photo">
+                    <img src="images/toffee-topito-2024.gif" alt="Adoption de Toffee-Topito en 2024" loading="lazy">
+                    <figcaption>Toffee-Topito · La famille s'agrandit</figcaption>
+                </figure>
+            </div>
+        </div>
+
+        <!-- 6. 2025 Demande en mariage - Portugal Algarve (droite) -->
+        <div class="timeline-item right">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-date">2025 · Algarve, Portugal</span>
+                <h3 data-fr="La demande en mariage" data-es="La pedida de mano">La demande en mariage</h3>
+                <p data-fr="Au bord de l'océan, en Algarve, la question est posée… et la réponse est oui."
+                   data-es="A orillas del océano, en el Algarve, se hace la pregunta… y la respuesta es sí.">
+                    Au bord de l'océan, en Algarve, la question est posée… et la réponse est oui.
+                </p>
+                <figure class="timeline-photo">
+                    <img src="images/algarve-2025.jpeg" alt="Demande en mariage au Portugal, Algarve, en novembre 2025" loading="lazy">
+                    <figcaption>Algarve · Le "oui" qui change une vie</figcaption>
+                </figure>
+            </div>
+        </div>
+
+        <!-- 7. Le mariage - étape finale (gauche) -->
+        <div class="timeline-item left">
+            <div class="timeline-dot timeline-dot-final"></div>
+            <div class="timeline-content">
+                <span class="timeline-date">14 août 2027</span>
+                <h3 data-fr="Le grand jour" data-es="El gran día">Le grand jour</h3>
+                <p data-fr="Et enfin, nous nous marions. On a hâte de célébrer ça avec vous !"
+                   data-es="Y por fin, nos casamos. ¡Estamos deseando celebrarlo con vosotros!">
+                    Et enfin, nous nous marions. On a hâte de célébrer ça avec vous !
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- DATES -->
+<section id="dates" class="tab reveal">
+    <h2 data-fr="La date importante" data-es="Fecha importante">La date importante</h2>
+    <ul>
+        <li data-fr="Cérémonie — 14 août 2027"
+            data-es="Ceremonia — 14 agosto 2027">
+            Cérémonie — 14 août 2027
+        </li>
+    </ul>
+</section>
+
+<!-- RSVP -->
+<section id="rsvp" class="tab reveal">
+    <h2 data-fr="Confirmez votre présence" data-es="Confirma tu asistencia">
+        Confirmez votre présence
+    </h2>
+
+    <form class="rsvp-form" id="rsvpForm" action="https://formspree.io/f/VOTRE_ID_FORMSPREE" method="POST">
+        <label for="rsvp-nom" data-fr="Nom et prénom" data-es="Nombre y apellido">
+            Nom et prénom
+        </label>
+        <input id="rsvp-nom" type="text" name="nom" placeholder="Votre nom complet" required>
+
+        <label for="rsvp-email" data-fr="Email" data-es="Correo electrónico">
+            Email
+        </label>
+        <input id="rsvp-email" type="email" name="email" placeholder="vous@example.com" required>
+
+        <label for="rsvp-personnes" data-fr="Nombre de personnes" data-es="Número de personas">
+            Nombre de personnes
+        </label>
+        <input id="rsvp-personnes" type="number" name="personnes" min="1" value="1" required>
+
+        <label for="rsvp-allergies" data-fr="Allergies" data-es="Alergias">
+            Allergies
+        </label>
+        <textarea id="rsvp-allergies" name="allergies" rows="3" placeholder="Aucune"></textarea>
+
+        <label for="rsvp-adresse" data-fr="Mon adresse" data-es="Mi dirección">
+            Mon adresse
+        </label>
+        <textarea id="rsvp-adresse" name="adresse" rows="2" placeholder="Votre adresse postale"></textarea>
+
+        <button type="submit"
+                data-fr="Envoyer"
+                data-es="Enviar">
+            Envoyer
+        </button>
+
+        <p class="rsvp-success" id="rsvpSuccess" role="status"
+           data-fr="Merci ! Votre réponse a bien été envoyée. 💌"
+           data-es="¡Gracias! Tu respuesta se ha enviado correctamente. 💌">
+        </p>
+    </form>
+</section>
+
+<footer class="site-footer">
+    <p class="footer-hashtag">#NathalyaEtPierre2027</p>
+    <p class="footer-contact"
+       data-fr="Une question ? Écrivez-nous : "
+       data-es="¿Alguna pregunta? Escríbenos: ">
+        Une question ? Écrivez-nous :
+        <a href="mailto:pierre3604@gmail.com">pierre3604@gmail.com</a>
+    </p>
+    <p class="footer-note"
+       data-fr="Avec amour, Nathalya &amp; Pierre"
+       data-es="Con amor, Nathalya &amp; Pierre">
+        Avec amour, Nathalya &amp; Pierre
+    </p>
+</footer>
+
+<script src="https://unpkg.com/globe.gl"></script>
+<script src="https://unpkg.com/topojson@3"></script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,668 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Georgia", serif;
+    background: #f7f4ee;
+    color: #333;
+}
+
+/* HEADER */
+header {
+    text-align: center;
+    padding: 25px 20px 10px;
+    position: relative;
+}
+
+header h1 {
+    font-size: 28px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+nav {
+    margin-top: 5px;
+}
+
+nav a {
+    margin: 0 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #444;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+nav a.active {
+    color: #000;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+nav a:focus-visible,
+.lang-btn:focus-visible,
+.cta-btn:focus-visible,
+button:focus-visible {
+    outline: 2px solid #c9a46c;
+    outline-offset: 3px;
+}
+
+.lang-switch {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}
+
+.lang-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 6px;
+    padding: 4px 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #777;
+}
+
+.lang-btn.active {
+    border-bottom: 1px solid #333;
+    color: #333;
+}
+
+/* HERO – BANDE PLEIN ÉCRAN */
+.hero {
+    position: relative;
+
+    /* prend toute la largeur de l'écran */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+
+    height: 450px;   /* tu peux augmenter/diminuer la hauteur */
+    overflow: hidden;
+}
+
+/* image ultra-large qui défile horizontalement */
+.hero-band {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;              /* plus large que l'écran */
+    height: 100%;
+    background-image: url("images/hero.jpeg");
+    background-size: cover;   /* pas de bandes blanches */
+    background-repeat: repeat-x;
+    background-position: center;
+    animation: slideBand 35s linear infinite;
+}
+
+/* overlay texte */
+.hero-overlay {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.hero-overlay h2 {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.hero-date {
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+.hero-overlay button {
+    margin-top: 25px;
+    padding: 12px 30px;
+    background: #fff;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* COMPTE À REBOURS */
+.countdown {
+    display: flex;
+    gap: 22px;
+    margin-top: 20px;
+}
+
+.countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 56px;
+}
+
+.countdown-number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.countdown-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+    opacity: 0.85;
+}
+
+/* Désactive les animations pour les personnes sensibles au mouvement */
+@media (prefers-reduced-motion: reduce) {
+    .hero-band {
+        animation: none;
+    }
+
+    .reveal {
+        transition: none;
+    }
+
+    .timeline-photo img {
+        transition: none;
+    }
+}
+
+/* CONTENU SECTIONS */
+.tab {
+    display: none;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 20px;
+}
+
+.tab.active {
+    display: block;
+}
+
+.tab h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.tab p,
+.tab li {
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+#dates ul {
+    list-style: none;
+}
+
+#dates li {
+    margin: 8px 0;
+}
+
+/* --- Section Notre histoire --- */
+#story {
+    padding: 4rem 1.5rem;
+}
+
+#story h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.story-intro {
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+    text-align: center;
+    color: #555;
+    font-size: 0.98rem;
+}
+
+/* --- Frise chronologique centrée --- */
+.timeline {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto 3rem;
+    padding: 2rem 0;
+}
+
+/* Ligne verticale au centre */
+.timeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    transform: translateX(-50%);
+    background: linear-gradient(
+        to bottom,
+        rgba(201, 164, 108, 0.1),
+        rgba(201, 164, 108, 0.9)
+    );
+}
+
+/* Chaque événement */
+.timeline-item {
+    position: relative;
+    width: 50%;
+    padding: 0 2rem;
+    box-sizing: border-box;
+    margin: 0 0 2.8rem;
+}
+
+/* Alignement gauche/droite */
+.timeline-item.left {
+    left: 0;
+    text-align: right;
+}
+
+.timeline-item.right {
+    left: 50%;
+}
+
+/* Point sur la ligne centrale */
+.timeline-dot {
+    position: absolute;
+    top: 20px;
+    left: 100%;
+    transform: translate(-50%, 0);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--accent-color, #c9a46c);
+    box-shadow: 0 0 0 4px rgba(201, 164, 108, 0.18);
+}
+
+/* Ajustement du point côté droit */
+.timeline-item.right .timeline-dot {
+    left: 0;
+    transform: translate(-50%, 0);
+}
+
+/* Point final (le mariage) : un peu plus gros, en évidence */
+.timeline-dot-final {
+    width: 20px;
+    height: 20px;
+    background: var(--accent-color, #c9a46c);
+    box-shadow: 0 0 0 6px rgba(201, 164, 108, 0.28);
+}
+
+/* Étape mise en avant pendant le scroll */
+.timeline-item.in-view .timeline-dot {
+    background: var(--accent-color, #c9a46c);
+    box-shadow: 0 0 0 6px rgba(201, 164, 108, 0.28);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.timeline-item.in-view .timeline-content {
+    box-shadow: 0 12px 30px rgba(201, 164, 108, 0.22);
+}
+
+/* Carte de contenu */
+.timeline-content {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem 1.4rem;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(201, 164, 108, 0.08);
+}
+
+/* Décalage léger vers la ligne centrale */
+.timeline-item.left .timeline-content {
+    margin-right: 1.5rem;
+}
+
+.timeline-item.right .timeline-content {
+    margin-left: 1.5rem;
+}
+
+/* Date + titres */
+.timeline-date {
+    display: inline-block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-color, #c9a46c);
+    margin-bottom: 0.25rem;
+}
+
+.timeline-content h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.1rem;
+}
+
+.timeline-content p {
+    margin: 0 0 0.75rem;
+    line-height: 1.5;
+    color: #555;
+}
+
+/* --- Photo dans chaque étape --- */
+.timeline-photo {
+    margin: 0;
+    margin-top: 0.6rem;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    background: #f5f2ec;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.timeline-photo img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+/* Effet au survol */
+.timeline-photo:hover img {
+    transform: scale(1.04);
+    filter: brightness(1.02);
+}
+
+/* Légende sur la photo */
+.timeline-photo figcaption {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8rem;
+    color: #fff;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.55),
+        rgba(0, 0, 0, 0.0)
+    );
+}
+
+/* --- Responsive : sur mobile, tout passe d'un côté --- */
+@media (max-width: 768px) {
+    .timeline {
+        padding-left: 1.5rem;
+    }
+
+    .timeline::before {
+        left: 16px;
+        transform: none;
+    }
+
+    .timeline-item {
+        width: 100%;
+        left: 0 !important;
+        padding: 0 0 0 2.5rem;
+        text-align: left;
+    }
+
+    .timeline-dot,
+    .timeline-item.right .timeline-dot {
+        left: 16px;
+        transform: translate(0, 0);
+    }
+
+    .timeline-item.left .timeline-content,
+    .timeline-item.right .timeline-content {
+        margin: 0 0 0.5rem 1.2rem;
+    }
+
+    .timeline-photo img {
+        height: 200px;
+    }
+}
+
+/* FORMULAIRE RSVP */
+.rsvp-form {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rsvp-form label {
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.rsvp-form input,
+.rsvp-form select,
+.rsvp-form textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: #fff;
+}
+
+.rsvp-form button {
+    margin-top: 12px;
+    padding: 10px 0;
+    border: none;
+    background: #333;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.rsvp-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.rsvp-success {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #eef7ee;
+    border: 1px solid #b7dab7;
+    color: #2f6d2f;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.rsvp-success.visible {
+    display: block;
+}
+
+.rsvp-error {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #fbeaea;
+    border: 1px solid #e3b3b3;
+    color: #a12a2a;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.rsvp-error.visible {
+    display: block;
+}
+
+/* FOOTER */
+.site-footer {
+    text-align: center;
+    padding: 50px 20px 40px;
+    border-top: 1px solid rgba(201, 164, 108, 0.25);
+    margin-top: 40px;
+    color: #666;
+}
+
+.footer-hashtag {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    color: var(--accent-color, #c9a46c);
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.footer-contact {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+
+.footer-contact a {
+    color: #333;
+}
+
+.footer-note {
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-top: 8px;
+}
+
+/* SCROLL ANIMATION */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ANIMATION BANDE */
+@keyframes slideBand {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+/* MOBILE (général) */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 22px;
+    }
+
+    .hero {
+        height: 360px;
+    }
+
+    .hero-overlay h2 {
+        font-size: 2.2rem;
+    }
+
+    nav a {
+        margin: 0 6px;
+        font-size: 11px;
+    }
+
+    .lang-switch {
+        top: 12px;
+        right: 10px;
+    }
+}
+
+/* Section "Notre map monde" */
+#map-journey {
+    padding: 80px 0;
+}
+
+#map-journey h2 {
+    font-size: 2rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+
+
+/* Globe + cartouche texte côte à côte */
+.globe-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+}
+/* Cercle pastel qui masque le globe */
+#globe-container {
+    position: relative;
+    width: 460px;       /* tu peux mettre 420 / 480 selon ce que tu préfères */
+    height: 460px;
+    margin: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: radial-gradient(circle at 30% 20%, #fde8e2, #d7ddf5);
+    box-shadow:
+        0 20px 40px rgba(15, 23, 42, 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+/* Panneau d'infos villes */
+.city-info {
+    max-width: 320px;
+    padding: 1.5rem 1.75rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 16px 35px rgba(15, 23, 42, 0.12);
+    text-align: left;
+    backdrop-filter: blur(8px);
+}
+
+.city-info h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.15rem;
+}
+
+.city-info p {
+    margin: 0;
+    line-height: 1.5;
+    color: #555;
+}
+
+/* Responsive globe */
+@media (max-width: 768px) {
+    #map-journey {
+        padding: 3rem 1.25rem;
+    }
+
+    .globe-wrapper {
+        flex-direction: column;
+    }
+
+    #globe-container {
+        width: 100%;
+        max-width: 360px;
+        height: 360px;
+    }
+
+    .city-info {
+        max-width: 100%;
+    }
+}
+/* Canvas Three.js : il remplit exactement le cercle, sans transform */
+#globe-container canvas {
+    position: absolute;
+    inset: 0;          /* top:0; right:0; bottom:0; left:0 */
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+
