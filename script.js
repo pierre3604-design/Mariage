@@ -485,7 +485,7 @@ fetch('//unpkg.com/world-atlas@2/countries-110m.json')
       .polygonsData(countries)
       .polygonCapColor(getCapColor)
       .polygonSideColor(() => 'rgba(0, 0, 0, 0.4)')
-      .polygonStrokeColor(() => '#ff9bbf')                // contour blanc fin
+      .polygonStrokeColor(() => 'rgba(255, 255, 255, 0.35)')  // contour discret
       .polygonLabel(({ properties: d }) => d.name)        // tooltip au survol (optionnel)
       .polygonAltitude(getAltitude)
       .polygonsTransitionDuration(300)
