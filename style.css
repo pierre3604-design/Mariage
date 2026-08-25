@@ -6,16 +6,24 @@
 }
 
 body {
-    font-family: "Georgia", serif;
+    font-family: "Inter", "Georgia", serif;
     background: #f7f4ee;
     color: #333;
+}
+
+h1, h2, h3 {
+    font-family: "Playfair Display", "Georgia", serif;
 }
 
 /* HEADER */
 header {
     text-align: center;
     padding: 25px 20px 10px;
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #f7f4ee;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 }
 
 header h1 {
@@ -191,10 +199,16 @@ button:focus-visible {
     max-width: 900px;
     margin: 0 auto;
     padding: 80px 20px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
 
 .tab.active {
     display: block;
+}
+
+.tab.active.visible-tab {
+    opacity: 1;
 }
 
 .tab h2 {
@@ -655,7 +669,78 @@ button:focus-visible {
         max-width: 100%;
     }
 }
-/* Canvas Three.js : il remplit exactement le cercle, sans transform */
+/* Loader du globe */
+.globe-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: #555;
+    z-index: 2;
+    transition: opacity 0.4s ease;
+}
+
+.globe-loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.globe-loader-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(201, 164, 108, 0.25);
+    border-top-color: #c9a46c;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .globe-loader-spinner {
+        animation: none;
+    }
+}
+
+/* Grille Infos pratiques */
+.infos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.infos-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(201, 164, 108, 0.08);
+}
+
+.infos-card h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    text-align: left;
+}
+
+.infos-card p {
+    text-align: left;
+    color: #555;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .infos-grid {
+        grid-template-columns: 1fr;
+    }
+}
 #globe-container canvas {
     position: absolute;
     inset: 0;          /* top:0; right:0; bottom:0; left:0 */
