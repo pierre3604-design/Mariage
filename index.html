@@ -22,6 +22,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
+    <!-- Leaflet (carte détaillée d'un pays) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -362,8 +365,19 @@
     </p>
 </footer>
 
+<!-- Fenêtre modale : carte détaillée d'un pays (lieux à visiter) -->
+<div class="country-modal" id="countryModal">
+    <div class="country-modal-content">
+        <button type="button" class="country-modal-close" onclick="closeCountryModal()" aria-label="Fermer">&times;</button>
+        <h3 id="countryModalTitle"></h3>
+        <p class="country-modal-subtitle" id="countryModalSubtitle"></p>
+        <div id="countryDetailMap" class="country-detail-map"></div>
+    </div>
+</div>
+
 <script src="https://unpkg.com/globe.gl"></script>
 <script src="https://unpkg.com/topojson@3"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
