@@ -8,15 +8,18 @@ function showTab(id) {
         homeSection.classList.remove('active');
     }
 
-    // 2. Retirer "active" de toutes les sections .tab (story, dates, rsvp)
+    // 2. Retirer "active" et le fondu de toutes les sections .tab
     document.querySelectorAll(".tab").forEach(tab => {
-        tab.classList.remove("active");
+        tab.classList.remove("active", "visible-tab");
     });
 
-    // 3. Activer la section demandée
+    // 3. Activer la section demandée, puis déclencher le fondu
     const current = document.getElementById(id);
     if (current) {
         current.classList.add("active");
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => current.classList.add("visible-tab"));
+        });
     }
 
     // 4. Mettre à jour l'état visuel du menu (lien actif)
@@ -230,6 +233,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!globeContainer || typeof Globe === 'undefined') return;
 
     const cityInfoBox = document.getElementById('city-info');
+    const globeLoader = document.getElementById('globeLoader');
+
+    function hideGlobeLoader() {
+        if (globeLoader) globeLoader.classList.add('hidden');
+    }
+
+    // Filet de sécurité : si le chargement traîne, on masque quand même après 6s
+    setTimeout(hideGlobeLoader, 6000);
 
     const cities = [
         {
@@ -405,6 +416,8 @@ fetch('//unpkg.com/world-atlas@2/countries-110m.json')
 
           showCountryInfo(selectedCountryName);
       });
+
+    hideGlobeLoader();
   });
 
     // === Forcer un globe parfaitement centré et carré dans le cercle ===
