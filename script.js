@@ -331,7 +331,55 @@ world
   .labelResolution(3)
   .labelDotRadius(0.22);  // petit point sous chaque label
 
-        // Frontières des pays
+        // Frontières des pays + clic pour faire apparaître un pays
+        let selectedCountryName = null;
+
+        // Petits textes pour les pays qui comptent dans votre histoire
+        const countryTexts = {
+            'France': "France · Là où a vu naître le petit Pierre.",
+            'Spain': "Espagne · Madrid, Sevilla... une bonne partie de votre histoire s'écrit ici.",
+            'Ecuador': "Équateur · Là où tout a commencé, à Quito.",
+            'Portugal': "Portugal · L'Algarve, où la demande en mariage a eu lieu."
+        };
+
+        function getCapColor(feat) {
+            return feat.properties.name === selectedCountryName
+                ? '#c9a46c'
+                : 'rgba(255, 255, 255, 0.04)';
+        }
+
+        function getAltitude(feat) {
+            return feat.properties.name === selectedCountryName ? 0.02 : 0.006;
+        }
+
+        // Calcule un centre approximatif du pays pour recentrer la caméra dessus
+        function getPolygonCentroid(geometry) {
+            let ring;
+            if (geometry.type === 'Polygon') {
+                ring = geometry.coordinates[0];
+            } else {
+                // MultiPolygon : on prend le plus grand anneau (l'île/zone principale)
+                ring = geometry.coordinates.reduce((biggest, poly) =>
+                    poly[0].length > biggest.length ? poly[0] : biggest
+                , geometry.coordinates[0][0]);
+            }
+            const total = ring.reduce((acc, [lng, lat]) => {
+                acc.lng += lng;
+                acc.lat += lat;
+                return acc;
+            }, { lng: 0, lat: 0 });
+            return { lat: total.lat / ring.length, lng: total.lng / ring.length };
+        }
+
+        function showCountryInfo(name) {
+            if (!cityInfoBox) return;
+            const text = countryTexts[name] || `${name} · Cliquez sur un autre pays pour l'explorer.`;
+            cityInfoBox.innerHTML = `
+                <h3>${name}</h3>
+                <p>${text}</p>
+            `;
+        }
+
 fetch('//unpkg.com/world-atlas@2/countries-110m.json')
   .then(res => res.json())
   .then(worldData => {
@@ -339,11 +387,24 @@ fetch('//unpkg.com/world-atlas@2/countries-110m.json')
 
     world
       .polygonsData(countries)
-      .polygonCapColor(() => 'rgba(255, 255, 255, 0.04)') // léger remplissage
+      .polygonCapColor(getCapColor)
       .polygonSideColor(() => 'rgba(0, 0, 0, 0.4)')
       .polygonStrokeColor(() => '#ff9bbf')                // contour blanc fin
       .polygonLabel(({ properties: d }) => d.name)        // tooltip au survol (optionnel)
-      .polygonsTransitionDuration(0);
+      .polygonAltitude(getAltitude)
+      .polygonsTransitionDuration(300)
+      .onPolygonClick(polygon => {
+          selectedCountryName = polygon.properties.name;
+
+          world
+              .polygonCapColor(getCapColor)
+              .polygonAltitude(getAltitude);
+
+          const centroid = getPolygonCentroid(polygon.geometry);
+          world.pointOfView({ lat: centroid.lat, lng: centroid.lng, altitude: 1.3 }, 1000);
+
+          showCountryInfo(selectedCountryName);
+      });
   });
 
     // === Forcer un globe parfaitement centré et carré dans le cercle ===
