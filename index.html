@@ -15,6 +15,12 @@
 
     <!-- Favicon (coeur simple en SVG) -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='24' font-size='24'%3E%F0%9F%A4%8D%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='24' font-size='24'%3E%F0%9F%A4%8D%3C/text%3E%3C/svg%3E">
+
+    <!-- Polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -35,6 +41,10 @@
         <a href="#" class="nav-link" data-tab="dates" onclick="showTab('dates'); return false;"
            data-fr="Les dates"
            data-es="Fechas importantes">Les dates</a>
+
+        <a href="#" class="nav-link" data-tab="infos" onclick="showTab('infos'); return false;"
+           data-fr="Infos pratiques"
+           data-es="Información práctica">Infos pratiques</a>
 
         <a href="#" class="nav-link" data-tab="rsvp" onclick="showTab('rsvp'); return false;"
            data-fr="RSVP"
@@ -97,7 +107,12 @@
     <h2 data-fr="Notre map monde" data-es="Nuestro mapa del mundo">Notre Map Monde</h2>
 
     <div class="globe-wrapper">
-        <div id="globe-container"></div>
+        <div id="globe-container">
+            <div class="globe-loader" id="globeLoader">
+                <span class="globe-loader-spinner"></span>
+                <span data-fr="Chargement du globe…" data-es="Cargando el globo…">Chargement du globe…</span>
+            </div>
+        </div>
 
         <div id="city-info" class="city-info">
             <h3 data-fr="Clique sur une ville" data-es="Haz clic en una ciudad">Clique sur une ville</h3>
@@ -246,6 +261,45 @@
             Cérémonie — 14 août 2027
         </li>
     </ul>
+</section>
+
+<!-- INFOS PRATIQUES -->
+<section id="infos" class="tab reveal">
+    <h2 data-fr="Infos pratiques" data-es="Información práctica">Infos pratiques</h2>
+
+    <div class="infos-grid">
+        <div class="infos-card">
+            <h3 data-fr="👗 Dress code" data-es="👗 Código de vestimenta">👗 Dress code</h3>
+            <p data-fr="Tenue chic et estivale. Pensez au sable si la cérémonie a lieu en extérieur !"
+               data-es="Vestimenta elegante y de verano. ¡Pensad en la arena si la ceremonia es al aire libre!">
+                Tenue chic et estivale. Pensez au sable si la cérémonie a lieu en extérieur !
+            </p>
+        </div>
+
+        <div class="infos-card">
+            <h3 data-fr="🚗 Transport" data-es="🚗 Transporte">🚗 Transport</h3>
+            <p data-fr="Détails sur les options de transport à venir. Un covoiturage sera organisé si besoin."
+               data-es="Más información sobre el transporte próximamente. Se organizará un coche compartido si es necesario.">
+                Détails sur les options de transport à venir. Un covoiturage sera organisé si besoin.
+            </p>
+        </div>
+
+        <div class="infos-card">
+            <h3 data-fr="🏨 Hébergement" data-es="🏨 Alojamiento">🏨 Hébergement</h3>
+            <p data-fr="Une liste d'hôtels et logements recommandés sera communiquée prochainement."
+               data-es="Próximamente compartiremos una lista de hoteles y alojamientos recomendados.">
+                Une liste d'hôtels et logements recommandés sera communiquée prochainement.
+            </p>
+        </div>
+
+        <div class="infos-card">
+            <h3 data-fr="🎁 Cadeaux" data-es="🎁 Regalos">🎁 Cadeaux</h3>
+            <p data-fr="Votre présence est le plus beau des cadeaux. Une cagnotte sera toutefois disponible si vous le souhaitez."
+               data-es="Vuestra presencia es el mejor regalo. Aun así, habrá disponible una lista de regalos si lo deseáis.">
+                Votre présence est le plus beau des cadeaux. Une cagnotte sera toutefois disponible si vous le souhaitez.
+            </p>
+        </div>
+    </div>
 </section>
 
 <!-- RSVP -->
