@@ -226,6 +226,91 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 /* ============================================================
+   Carte détaillée d'un pays (fenêtre modale) : lieux à visiter
+   ============================================================ */
+const countryPOIs = {
+    'Ecuador': {
+        center: [-1.4, -78.5],
+        zoom: 6,
+        titleFr: 'Équateur · à visiter',
+        titleEs: 'Ecuador · lugares por visitar',
+        subtitleFr: "Quelques lieux qui ont compté dans notre histoire, et d'autres à découvrir.",
+        subtitleEs: 'Algunos lugares importantes en nuestra historia, y otros por descubrir.',
+        places: [
+            { name: 'Quito', lat: -0.1807, lng: -78.4678, desc: "Capitale, centre historique classé à l'UNESCO. C'est ici que tout a commencé pour nous." },
+            { name: 'Îles Galápagos', lat: -0.9538, lng: -90.9656, desc: 'Faune unique au monde, snorkeling et tortues géantes.' },
+            { name: 'Baños de Agua Santa', lat: -1.3958, lng: -78.4247, desc: "Cascades, sports d'aventure, sources thermales." },
+            { name: 'Cuenca', lat: -2.9006, lng: -79.0045, desc: 'Ville coloniale, patrimoine mondial UNESCO.' },
+            { name: 'Otavalo', lat: 0.2345, lng: -78.2616, desc: 'Célèbre marché artisanal andin.' },
+            { name: 'Mindo', lat: 0.0500, lng: -78.7667, desc: "Forêt nuageuse, observation d'oiseaux et colibris." },
+            { name: 'Cotopaxi', lat: -0.6836, lng: -78.4386, desc: 'Volcan actif emblématique, randonnée.' }
+        ]
+    }
+};
+
+let countryDetailMap = null;
+
+function openCountryModal(countryName) {
+    const data = countryPOIs[countryName];
+    if (!data || typeof L === 'undefined') return; // pas de carte détaillée dispo pour ce pays
+
+    const modal = document.getElementById('countryModal');
+    const title = document.getElementById('countryModalTitle');
+    const subtitle = document.getElementById('countryModalSubtitle');
+    if (!modal || !title || !subtitle) return;
+
+    const currentLang = document.documentElement.getAttribute('lang') === 'es' ? 'es' : 'fr';
+    title.textContent = currentLang === 'es' ? data.titleEs : data.titleFr;
+    subtitle.textContent = currentLang === 'es' ? data.subtitleEs : data.subtitleFr;
+
+    modal.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+
+    // Leaflet doit s'initialiser une fois le conteneur visible et dimensionné
+    requestAnimationFrame(() => {
+        if (!countryDetailMap) {
+            countryDetailMap = L.map('countryDetailMap');
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 18
+            }).addTo(countryDetailMap);
+        }
+
+        countryDetailMap.setView(data.center, data.zoom);
+
+        // Retirer les anciens marqueurs avant d'ajouter les nouveaux
+        countryDetailMap.eachLayer(layer => {
+            if (layer instanceof L.Marker) countryDetailMap.removeLayer(layer);
+        });
+
+        data.places.forEach(place => {
+            L.marker([place.lat, place.lng])
+                .addTo(countryDetailMap)
+                .bindPopup(`<strong>${place.name}</strong><br>${place.desc}`);
+        });
+
+        // Leaflet a besoin d'être "réveillé" une fois le conteneur affiché
+        setTimeout(() => countryDetailMap.invalidateSize(), 200);
+    });
+}
+
+function closeCountryModal() {
+    const modal = document.getElementById('countryModal');
+    if (modal) modal.classList.remove('visible');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeCountryModal();
+});
+
+document.addEventListener('click', event => {
+    const modal = document.getElementById('countryModal');
+    if (modal && event.target === modal) closeCountryModal();
+});
+
+
+/* ============================================================
    Globe interactif : Montpellier, Madrid, Sevilla, Quito
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
@@ -415,6 +500,9 @@ fetch('//unpkg.com/world-atlas@2/countries-110m.json')
           world.pointOfView({ lat: centroid.lat, lng: centroid.lng, altitude: 1.3 }, 1000);
 
           showCountryInfo(selectedCountryName);
+
+          // Si on a une carte détaillée pour ce pays (ex: Équateur), on l'ouvre
+          openCountryModal(selectedCountryName);
       });
 
     hideGlobeLoader();
