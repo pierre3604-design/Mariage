@@ -1,3 +1,18 @@
+/* Palette champêtre-chic — couleurs centralisées */
+:root {
+    --brun: #8F5C2B;
+    --sable: #E6DBD1;
+    --ivoire: #ECE8E2;
+    --bleu: #678087;
+    --sauge: #929E72;
+    --olive: #68754F;
+    --foret: #3D5919;
+    --foret-rgb: 61, 89, 25;
+    --olive-rgb: 104, 117, 79;
+    --brun-rgb: 143, 92, 43;
+    --ivoire-rgb: 236, 232, 226;
+}
+
 /* RESET */
 * {
     margin: 0;
@@ -7,8 +22,8 @@
 
 body {
     font-family: "Inter", "Georgia", serif;
-    background: #f7f4ee;
-    color: #333;
+    background: var(--ivoire);
+    color: var(--foret);
 }
 
 h1, h2, h3 {
@@ -22,8 +37,8 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: #f7f4ee;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    background: var(--ivoire);
+    box-shadow: 0 2px 12px rgba(var(--foret-rgb), 0.10);
 }
 
 header h1 {
@@ -42,7 +57,7 @@ nav a {
     text-transform: uppercase;
     font-size: 12px;
     letter-spacing: 1px;
-    color: #444;
+    color: var(--olive);
 }
 
 nav a:hover {
@@ -50,7 +65,7 @@ nav a:hover {
 }
 
 nav a.active {
-    color: #000;
+    color: var(--foret);
     font-weight: bold;
     text-decoration: underline;
 }
@@ -59,7 +74,7 @@ nav a:focus-visible,
 .lang-btn:focus-visible,
 .cta-btn:focus-visible,
 button:focus-visible {
-    outline: 2px solid #c9a46c;
+    outline: 2px solid var(--brun);
     outline-offset: 3px;
 }
 
@@ -78,12 +93,12 @@ button:focus-visible {
     padding: 4px 6px;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: #777;
+    color: var(--bleu);
 }
 
 .lang-btn.active {
-    border-bottom: 1px solid #333;
-    color: #333;
+    border-bottom: 1px solid var(--foret);
+    color: var(--foret);
 }
 
 /* HERO – BANDE PLEIN ÉCRAN */
@@ -118,8 +133,8 @@ button:focus-visible {
     position: relative;
     z-index: 2;
     height: 100%;
-    background: rgba(0, 0, 0, 0.35);
-    color: #fff;
+    background: rgba(var(--foret-rgb), 0.62);
+    color: var(--ivoire);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -141,8 +156,8 @@ button:focus-visible {
 .hero-overlay button {
     margin-top: 25px;
     padding: 12px 30px;
-    background: #fff;
-    color: #000;
+    background: var(--ivoire);
+    color: var(--foret);
     border: none;
     cursor: pointer;
     font-size: 0.9rem;
@@ -246,7 +261,7 @@ button:focus-visible {
     max-width: 700px;
     margin: 0 auto 2.5rem;
     text-align: center;
-    color: #555;
+    color: var(--foret);
     font-size: 0.98rem;
 }
 
@@ -269,8 +284,8 @@ button:focus-visible {
     transform: translateX(-50%);
     background: linear-gradient(
         to bottom,
-        rgba(201, 164, 108, 0.1),
-        rgba(201, 164, 108, 0.9)
+        rgba(var(--brun-rgb), 0.18),
+        rgba(var(--brun-rgb), 0.92)
     );
 }
 
@@ -302,9 +317,9 @@ button:focus-visible {
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #fff;
-    border: 3px solid var(--accent-color, #c9a46c);
-    box-shadow: 0 0 0 4px rgba(201, 164, 108, 0.18);
+    background: var(--ivoire);
+    border: 3px solid var(--brun);
+    box-shadow: 0 0 0 4px rgba(var(--brun-rgb), 0.28);
 }
 
 /* Ajustement du point côté droit */
@@ -317,28 +332,28 @@ button:focus-visible {
 .timeline-dot-final {
     width: 20px;
     height: 20px;
-    background: var(--accent-color, #c9a46c);
-    box-shadow: 0 0 0 6px rgba(201, 164, 108, 0.28);
+    background: var(--brun);
+    box-shadow: 0 0 0 6px rgba(var(--brun-rgb), 0.38);
 }
 
 /* Étape mise en avant pendant le scroll */
 .timeline-item.in-view .timeline-dot {
-    background: var(--accent-color, #c9a46c);
-    box-shadow: 0 0 0 6px rgba(201, 164, 108, 0.28);
+    background: var(--brun);
+    box-shadow: 0 0 0 6px rgba(var(--brun-rgb), 0.38);
     transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .timeline-item.in-view .timeline-content {
-    box-shadow: 0 12px 30px rgba(201, 164, 108, 0.22);
+    box-shadow: 0 12px 30px rgba(var(--brun-rgb), 0.30);
 }
 
 /* Carte de contenu */
 .timeline-content {
-    background: #ffffff;
+    background: var(--ivoire);
     border-radius: 14px;
     padding: 1.2rem 1.4rem 1.4rem;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(201, 164, 108, 0.08);
+    box-shadow: 0 12px 30px rgba(var(--foret-rgb), 0.12);
+    border: 1px solid rgba(var(--brun-rgb), 0.18);
 }
 
 /* Décalage léger vers la ligne centrale */
@@ -357,7 +372,7 @@ button:focus-visible {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--accent-color, #c9a46c);
+    color: var(--brun);
     margin-bottom: 0.25rem;
 }
 
@@ -369,7 +384,7 @@ button:focus-visible {
 .timeline-content p {
     margin: 0 0 0.75rem;
     line-height: 1.5;
-    color: #555;
+    color: var(--foret);
 }
 
 /* --- Photo dans chaque étape --- */
@@ -379,8 +394,8 @@ button:focus-visible {
     border-radius: 12px;
     overflow: hidden;
     position: relative;
-    background: #f5f2ec;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    background: var(--sable);
+    box-shadow: 0 8px 24px rgba(var(--foret-rgb), 0.14);
 }
 
 .timeline-photo img {
@@ -405,11 +420,11 @@ button:focus-visible {
     width: 100%;
     padding: 0.45rem 0.75rem;
     font-size: 0.8rem;
-    color: #fff;
+    color: var(--ivoire);
     background: linear-gradient(
         to top,
-        rgba(0, 0, 0, 0.55),
-        rgba(0, 0, 0, 0.0)
+        rgba(var(--foret-rgb), 0.78),
+        rgba(var(--foret-rgb), 0)
     );
 }
 
@@ -466,18 +481,18 @@ button:focus-visible {
 .rsvp-form textarea {
     width: 100%;
     padding: 8px 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--sable);
     font-family: inherit;
     font-size: 0.9rem;
-    background: #fff;
+    background: var(--ivoire);
 }
 
 .rsvp-form button {
     margin-top: 12px;
     padding: 10px 0;
     border: none;
-    background: #333;
-    color: #fff;
+    background: var(--foret);
+    color: var(--ivoire);
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
@@ -492,9 +507,9 @@ button:focus-visible {
     display: none;
     margin-top: 10px;
     padding: 10px 12px;
-    background: #eef7ee;
-    border: 1px solid #b7dab7;
-    color: #2f6d2f;
+    background: var(--sauge);
+    border: 1px solid var(--olive);
+    color: var(--foret);
     font-size: 0.9rem;
     text-align: center;
 }
@@ -507,9 +522,9 @@ button:focus-visible {
     display: none;
     margin-top: 10px;
     padding: 10px 12px;
-    background: #fbeaea;
-    border: 1px solid #e3b3b3;
-    color: #a12a2a;
+    background: var(--sable);
+    border: 1px solid var(--brun);
+    color: var(--foret);
     font-size: 0.9rem;
     text-align: center;
 }
@@ -522,15 +537,15 @@ button:focus-visible {
 .site-footer {
     text-align: center;
     padding: 50px 20px 40px;
-    border-top: 1px solid rgba(201, 164, 108, 0.25);
+    border-top: 1px solid rgba(var(--brun-rgb), 0.32);
     margin-top: 40px;
-    color: #666;
+    color: var(--foret);
 }
 
 .footer-hashtag {
     font-size: 1.1rem;
     letter-spacing: 1px;
-    color: var(--accent-color, #c9a46c);
+    color: var(--brun);
     margin-bottom: 10px;
     font-weight: bold;
 }
@@ -541,7 +556,7 @@ button:focus-visible {
 }
 
 .footer-contact a {
-    color: #333;
+    color: var(--foret);
 }
 
 .footer-note {
@@ -621,10 +636,10 @@ button:focus-visible {
     margin: 0;
     border-radius: 50%;
     overflow: hidden;
-    background: radial-gradient(circle at 30% 20%, #fde8e2, #d7ddf5);
+    background: radial-gradient(circle at 30% 20%, var(--sable), var(--bleu));
     box-shadow:
-        0 20px 40px rgba(15, 23, 42, 0.18),
-        0 0 0 1px rgba(255, 255, 255, 0.6);
+        0 20px 40px rgba(var(--foret-rgb), 0.22),
+        0 0 0 1px rgba(var(--ivoire-rgb), 0.72);
 }
 
 /* Panneau d'infos villes */
@@ -632,8 +647,8 @@ button:focus-visible {
     max-width: 320px;
     padding: 1.5rem 1.75rem;
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.88);
-    box-shadow: 0 16px 35px rgba(15, 23, 42, 0.12);
+    background: rgba(var(--ivoire-rgb), 0.94);
+    box-shadow: 0 16px 35px rgba(var(--foret-rgb), 0.16);
     text-align: left;
     backdrop-filter: blur(8px);
 }
@@ -646,7 +661,7 @@ button:focus-visible {
 .city-info p {
     margin: 0;
     line-height: 1.5;
-    color: #555;
+    color: var(--foret);
 }
 
 /* Responsive globe */
@@ -679,7 +694,7 @@ button:focus-visible {
     justify-content: center;
     gap: 12px;
     font-size: 0.85rem;
-    color: #555;
+    color: var(--foret);
     z-index: 2;
     transition: opacity 0.4s ease;
 }
@@ -692,8 +707,8 @@ button:focus-visible {
 .globe-loader-spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid rgba(201, 164, 108, 0.25);
-    border-top-color: #c9a46c;
+    border: 3px solid rgba(var(--brun-rgb), 0.32);
+    border-top-color: var(--brun);
     border-radius: 50%;
     animation: spin 0.9s linear infinite;
 }
@@ -717,11 +732,11 @@ button:focus-visible {
 }
 
 .infos-card {
-    background: #fff;
+    background: var(--ivoire);
     border-radius: 14px;
     padding: 1.5rem;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(201, 164, 108, 0.08);
+    box-shadow: 0 12px 30px rgba(var(--foret-rgb), 0.12);
+    border: 1px solid rgba(var(--brun-rgb), 0.18);
 }
 
 .infos-card h3 {
@@ -732,7 +747,7 @@ button:focus-visible {
 
 .infos-card p {
     text-align: left;
-    color: #555;
+    color: var(--foret);
     margin: 0;
 }
 
@@ -757,7 +772,7 @@ button:focus-visible {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(15, 15, 20, 0.6);
+    background: rgba(var(--foret-rgb), 0.72);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -770,14 +785,14 @@ button:focus-visible {
 
 .country-modal-content {
     position: relative;
-    background: #fff;
+    background: var(--ivoire);
     border-radius: 16px;
     padding: 1.75rem;
     width: 100%;
     max-width: 720px;
     max-height: 85vh;
     overflow-y: auto;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 25px 60px rgba(var(--foret-rgb), 0.62);
 }
 
 .country-modal-close {
@@ -789,11 +804,11 @@ button:focus-visible {
     font-size: 1.6rem;
     line-height: 1;
     cursor: pointer;
-    color: #666;
+    color: var(--foret);
 }
 
 .country-modal-close:hover {
-    color: #000;
+    color: var(--foret);
 }
 
 .country-modal-content h3 {
@@ -802,7 +817,7 @@ button:focus-visible {
 }
 
 .country-modal-subtitle {
-    color: #666;
+    color: var(--foret);
     font-size: 0.9rem;
     margin-bottom: 1rem;
     text-align: left;
@@ -813,7 +828,7 @@ button:focus-visible {
     height: 380px;
     border-radius: 12px;
     overflow: hidden;
-    background: #eee;
+    background: var(--sable);
 }
 
 @media (max-width: 768px) {
