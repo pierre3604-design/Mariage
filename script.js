@@ -361,36 +361,36 @@ document.addEventListener('DOMContentLoaded', function () {
             startLng: cities[0].lng,
             endLat: cities[1].lat,
             endLng: cities[1].lng,
-            color: ['#f97373', '#fbbf77']
+            color: ['#8F5C2B', '#929E72']
         },
         {
             startLat: cities[1].lat,
             startLng: cities[1].lng,
             endLat: cities[2].lat,
             endLng: cities[2].lng,
-            color: ['#fbbf77', '#f97373']
+            color: ['#929E72', '#8F5C2B']
         },
         {
             startLat: cities[2].lat,
             startLng: cities[2].lng,
             endLat: cities[3].lat,
             endLng: cities[3].lng,
-            color: ['#f97373', '#6b9cff']
+            color: ['#8F5C2B', '#678087']
         }
     ];
 
     const world = Globe()(globeContainer)
         .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
         .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-        .backgroundColor('rgba(0,0,0,0)')
+        .backgroundColor('rgba(61, 89, 25, 0)')
         .showAtmosphere(true)
-        .atmosphereColor('#f8b4b4')
+        .atmosphereColor('#929E72')
         .atmosphereAltitude(0.22)
         .pointsData(cities)
         .pointLat(d => d.lat)
         .pointLng(d => d.lng)
         .pointAltitude(0.03)
-        .pointColor(() => '#e11d48')
+        .pointColor(() => '#68754F')
         .pointRadius(0.22)
         .pointsMerge(true)
         .pointLabel(d => d.name)
@@ -422,7 +422,7 @@ world
   .labelLng(d => d.lng)
   .labelText(d => d.name)
   .labelSize(d => d.type === 'country' ? 0.9 : 0.7)   // pays un peu plus gros que villes
-  .labelColor(d => d.type === 'country' ? '#0f172a' : '#e11d48') // pays sombre, villes rose
+  .labelColor(d => d.type === 'country' ? '#3D5919' : '#68754F') // pays sombre, villes rose
   .labelAltitude(d => d.type === 'country' ? 0.06 : 0.045)
   .labelResolution(3)
   .labelDotRadius(0.22);  // petit point sous chaque label
@@ -440,8 +440,8 @@ world
 
         function getCapColor(feat) {
             return feat.properties.name === selectedCountryName
-                ? '#c9a46c'
-                : 'rgba(255, 255, 255, 0.04)';
+                ? '#8F5C2B'
+                : 'rgba(236, 232, 226, 0.16)';
         }
 
         function getAltitude(feat) {
@@ -484,8 +484,8 @@ fetch('//unpkg.com/world-atlas@2/countries-110m.json')
     world
       .polygonsData(countries)
       .polygonCapColor(getCapColor)
-      .polygonSideColor(() => 'rgba(0, 0, 0, 0.4)')
-      .polygonStrokeColor(() => 'rgba(255, 255, 255, 0.35)')  // contour discret
+      .polygonSideColor(() => 'rgba(61, 89, 25, 0.55)')
+      .polygonStrokeColor(() => 'rgba(236, 232, 226, 0.45)')  // contour discret
       .polygonLabel(({ properties: d }) => d.name)        // tooltip au survol (optionnel)
       .polygonAltitude(getAltitude)
       .polygonsTransitionDuration(300)
