@@ -836,3 +836,14 @@ button:focus-visible {
         height: 300px;
     }
 }
+
+
+/* Globe 3D original — couche isolée, sans modifier le reste du site */
+#globe-container {
+    background: radial-gradient(circle at 35% 25%, #173c66 0%, #081326 58%, #02050d 100%);
+    box-shadow: 0 20px 44px rgba(25, 42, 65, .28), 0 0 0 1px rgba(255,255,255,.16), 0 0 46px rgba(80, 165, 219, .22);
+}
+#globe-container canvas { touch-action: none; cursor: grab; }
+#globe-container canvas.is-dragging { cursor: grabbing; }
+#globe-container .globe-hint { position:absolute; z-index:3; bottom:16px; left:0; right:0; text-align:center; color:rgba(240,248,255,.7); font:11px Inter, sans-serif; letter-spacing:.08em; pointer-events:none; }
+@media (prefers-reduced-motion: reduce) { #globe-container .globe-hint { display:none; } }
