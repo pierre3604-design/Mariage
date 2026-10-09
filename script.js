@@ -326,3 +326,8 @@ function toggleMapOnHome() {
 }
 
 document.addEventListener('DOMContentLoaded', toggleMapOnHome);
+
+// Initialisation du globe Three.js après le chargement de globe-new.js.
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.initGlobe === 'function') window.initGlobe();
+});
