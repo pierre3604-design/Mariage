@@ -1,468 +1,954 @@
-/* ============================================================
-   Nathalya & Pierre — 14 août 2027
-   Script principal (vanilla JS, aucun CDN externe pour le globe).
-   Sections :
-     1. Traductions FR / ES
-     2. POIs de l'Équateur (17 points)
-     3. Moteur i18n (applyI18n / setLang / getCurrentLang)
-     4. Onglets (showTab)
-     5. Compte à rebours
-     6. Apparition au scroll (reveal + frise)
-     7. Modale pays (Leaflet)
-     8. Globe Canvas2D auto-suffisant (WORLD_GEO embarqué)
-     9. Formulaire RSVP (FormSubmit + honeypot)
-    10. Affichage du globe quand #home est actif
-   ============================================================ */
-
+/* ==========================================================
+   Nathalya & Pierre — 14.08.2027
+   « La ruta que nos trajo hasta aquí »
+   Script principal (vanilla JS, seule dépendance : Leaflet).
+     1. Réglages
+     2. Textes FR / ES
+     3. Données : globe, villes de départ, lieux en Équateur, itinéraires
+     4. Langue
+     5. Onglets (gares) et menu
+     6. Compte à rebours
+     7. Globe (canvas, sans librairie)
+     8. Carte de l'Équateur (Leaflet)
+     9. RSVP : le billet (FormSubmit)
+    10. Démarrage
+    11. Fond de carte du monde (Natural Earth, domaine public)
+   ========================================================== */
 (function () {
-  'use strict';
+'use strict';
 
+/* ---------- 1. Réglages ---------- */
+// Heure de la cérémonie, heure de l'Équateur (UTC-5). À mettre à jour quand l'horaire est fixé.
+const CEREMONY = new Date('2027-08-14T16:00:00-05:00');
+const RSVP_ENDPOINT = 'https://formsubmit.co/ajax/pierre3604@gmail.com';
+const TABS = ['inicio', 'ruta', 'boda', 'rsvp', 'mapa', 'viaje', 'faq'];
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* 1. Traductions */
-const translations = {
+const C = {
+  ivoire: '#EDEAE4', lin: '#E6DDD3', sauge: '#949C6F', olive: '#6A7550', foret: '#3D5A1E',
+  caramel: '#8B5A2B', cendre: '#637E84', creme: '#F1F0E0', encre: '#2A2A24'
+};
+
+/* ---------- 2. Textes ---------- */
+const T = {
   fr: {
-    // Navigation
-    navHome: "Accueil", navStory: "Notre histoire", navDates: "Les dates",
-    navInfos: "Infos pratiques", navRsvp: "RSVP",
-    // Hero
-    heroTitle: "Nous nous marions !", heroDate: "14 août 2027",
-    heroCta: "RSVP - Confirmer ma présence",
-    // Countdown
-    cdDays: "jours", cdHours: "heures", cdMinutes: "min", cdSeconds: "sec",
-    // Globe / Map
-    mapTitle: "Notre map monde",
-    mapHint: "Glisse pour explorer · Ecuador · Lat 0°",
-    mapLoading: "Chargement du globe…",
-    mapClickCity: "Clique sur une ville",
-    mapSelectPrompt: "Clique sur une ville",
-    mapInfoTitle: "Clique sur une ville",
-    mapInfoBody: "Sélectionne un marqueur sur le globe pour en savoir plus.",
-    // Story
-    storyTitle: "Notre histoire",
-    storyIntro: "Quelques moments importants qui ont façonné notre histoire d'amour, entre l'Équateur, l'Espagne, le Portugal… et Toffee-Topito.",
-    storyItem1Title: "Notre rencontre",
-    storyItem1Text: "Tout commence à Quito. Deux vies, deux pays, une rencontre qui change tout.",
-    storyItem1Fig: "Quito · Nos premiers souvenirs ensemble",
-    storyItem2Title: "Madrid, une nouvelle étape",
-    storyItem2Text: "Madrid devient un de nos points de repère, entre rires, balades et projets qui se dessinent.",
-    storyItem2Fig: "Madrid · Terrasses, balades et projets à deux",
-    storyItem3Title: "Rencontre des familles",
-    storyItem3Text: "La rencontre avec la famille de Nathalya.",
-    storyItem3Fig: "Équateur · La famille réunie autour de nous",
-    storyItem4Title: "Séville, ville de lumière",
-    storyItem4Text: "Séville et l'Andalousie nous voilà ! Une nouvelle aventure commence.",
-    storyItem4Fig: "Séville · Entre flamenco, soleil et complicité",
-    storyItem5Title: "Adoption de Toffee-Topito",
-    storyItem5Text: "La famille s'agrandit avec Toffee-Topito.",
-    storyItem5Fig: "Toffee-Topito · La famille s'agrandit",
-    storyItem6Title: "La demande en mariage",
-    storyItem6Text: "Au bord de l'océan, en Algarve, la question est posée… et la réponse est oui.",
-    storyItem6Fig: "Algarve · Le « oui » qui change une vie",
-    storyItem7Title: "Le grand jour",
-    storyItem7Text: "Et enfin, nous nous marions. On a hâte de célébrer ça avec vous !",
-    // Dates
-    datesTitle: "La date importante",
-    datesCeremony: "Cérémonie — 14 août 2027",
-    // Infos pratiques
-    infosTitle: "Infos pratiques",
-    infosDressTitle: "👗 Dress code",
-    infosDress: "Tenue chic et estivale. Pensez au sable si la cérémonie a lieu en extérieur !",
-    infosTransportTitle: "🚗 Transport",
-    infosTransport: "Détails sur les options de transport à venir. Un covoiturage sera organisé si besoin.",
-    infosHotelTitle: "🏨 Hébergement",
-    infosHotel: "Une liste d'hôtels et logements recommandés sera communiquée prochainement.",
-    infosGiftTitle: "🎁 Cadeaux",
-    infosGift: "Votre présence est le plus beau des cadeaux. Une cagnotte sera toutefois disponible si vous le souhaitez.",
-    // RSVP
-    rsvpTitle: "Confirmez votre présence",
-    rsvpName: "Nom et prénom", rsvpNamePh: "Votre nom complet",
-    rsvpEmail: "Email", rsvpEmailPh: "vous@example.com",
-    rsvpGuests: "Nombre de personnes",
-    rsvpAllergies: "Allergies", rsvpAllergiesPh: "Aucune",
-    rsvpAddress: "Mon adresse", rsvpAddressPh: "Votre adresse postale",
-    rsvpSubmit: "Envoyer",
-    rsvpSending: "Envoi en cours…",
-    rsvpSuccess: "Merci ! Votre réponse a bien été envoyée. 💌",
-    rsvpError: "Oups, l'envoi a échoué. Vous pouvez aussi nous écrire directement.",
-    rsvpNote: "Tu peux aussi nous écrire directement à pierre3604@gmail.com.",
-    // Footer
-    footerHashtag: "#NathalyaEtPierre2027",
-    footerContact: "Une question ? Écrivez-nous : ",
-    footerNote: "Avec amour, Nathalya & Pierre",
-    // Country modal
-    countryCloseAria: "Fermer",
-    countryTitleEcuador: "Équateur · à visiter",
-    countrySubtitleEcuador: "Quelques lieux qui ont compté dans notre histoire, et d'autres à découvrir.",
-    // 17 POI
-    poi_quito_name: "Quito · Centre historique",
-    poi_quito_desc: "Capitale de l'Équateur, fondée au XVIᵉ siècle, son centre colonial est classé UNESCO. C'est ici que tout a commencé pour nous.",
-    poi_mitad_name: "Mitad del Mundo",
-    poi_mitad_desc: "Le monument de la Mitad del Mundo marque la ligne de l'équateur, à 28 km au nord de Quito. Latitude 0°0'0\".",
-    poi_galapagos_name: "Îles Galápagos",
-    poi_galapagos_desc: "Archipel volcanique, faune endémique unique au monde (tortues géantes, iguanes, frégates).",
-    poi_cotopaxi_name: "Cotopaxi",
-    poi_cotopaxi_desc: "Volcan actif (5 897 m) culminant dans la Cordillère des Andes, randonnée et refuge.",
-    poi_otavalo_name: "Otavalo",
-    poi_otavalo_desc: "Célèbre pour son marché artisanal andin, l'un des plus colorés d'Amérique du Sud.",
-    poi_cuenca_name: "Cuenca",
-    poi_cuenca_desc: "Ville coloniale du sud, son centre historique est inscrit au patrimoine mondial de l'UNESCO.",
-    poi_podocarpus_name: "Parc national Podocarpus",
-    poi_podocarpus_desc: "Forêt nuageuse andine près de Loja, riche en biodiversité et cascades.",
-    poi_tena_name: "Tena · Amazonie",
-    poi_tena_desc: "Porte d'entrée de l'Amazonie équatorienne, rivières, communautés Kichwa et lodges.",
-    poi_yasuni_name: "Yasuní",
-    poi_yasuni_desc: "Réserve de biosphère UNESCO, l'une des zones les plus biodiversifiées de la planète.",
-    poi_montanita_name: "Montañita",
-    poi_montanita_desc: "Village balnéaire célèbre pour ses vagues et son ambiance bohème.",
-    poi_banos_name: "Baños de Agua Santa",
-    poi_banos_desc: "Au pied du Tungurahua, cascades, sports d'aventure et sources thermales.",
-    poi_quilotoa_name: "Quilotoa",
-    poi_quilotoa_desc: "Cratère d'un volcan éteint avec un lac turquoise, randonnée emblématique.",
-    poi_mindo_name: "Mindo",
-    poi_mindo_desc: "Forêt nuageuse, observation de colibris (300+ espèces), papillons et cascades.",
-    poi_guayaquil_name: "Guayaquil",
-    poi_guayaquil_desc: "Plus grande ville du pays, port sur le fleuve Guayas, malecón et animation.",
-    poi_chimborazo_name: "Chimborazo",
-    poi_chimborazo_desc: "Plus haut volcan d'Équateur (6 263 m), point le plus éloigné du centre de la Terre.",
-    poi_vilcabamba_name: "Vilcabamba",
-    poi_vilcabamba_desc: "Vallée andine surnommée la « vallée de l'éternité » pour sa longévité.",
-    poi_lopez_name: "Puerto López",
-    poi_lopez_desc: "Côte pacifique, point de départ pour l'île de la Plata et observation des baleines."
+    all: 'Tout voir',
+    cat_ville: 'Villes et patrimoine', cat_andes: 'Andes et nature', cat_amazonie: 'Amazonie', cat_galapagos: 'Galápagos',
+    overview: 'Vue d\'ensemble',
+    chooseCity: 'Choisir une ville…',
+    yourTrip: 'Votre voyage',
+    toQuito: 'jusqu\'à Quito',
+    kmBird: 'km à vol d\'oiseau',
+    sending: 'Compostage en cours…',
+    okYes: '¡Gracias! Votre billet est composté. On a hâte de vous voir en Équateur.',
+    okNo: 'Merci de nous avoir prévenus. Vous nous manquerez.',
+    err: 'L\'envoi n\'a pas fonctionné. Réessayez, ou écrivez-nous à pierre3604@gmail.com.',
+    checkFields: 'Vérifiez les champs signalés en caramel.',
+    passenger: 'Passager', classYes: 'Je viens', classNo: 'Je ne pourrai pas venir',
+    stamp: 'Confirmé', globeLabel: 'Globe interactif : la France de Pierre, notre Espagne, l\'Équateur de Nathalya'
   },
   es: {
-    navHome: "Inicio", navStory: "Nuestra historia", navDates: "Fechas importantes",
-    navInfos: "Información práctica", navRsvp: "RSVP",
-    heroTitle: "¡Nos casamos!", heroDate: "14 agosto 2027",
-    heroCta: "RSVP - Confirmar asistencia",
-    cdDays: "días", cdHours: "horas", cdMinutes: "min", cdSeconds: "seg",
-    mapTitle: "Nuestro mapa del mundo",
-    mapHint: "Arrastra para explorar · Ecuador · Lat 0°",
-    mapLoading: "Cargando el globo…",
-    mapClickCity: "Haz clic en una ciudad",
-    mapSelectPrompt: "Haz clic en una ciudad",
-    mapInfoTitle: "Haz clic en una ciudad",
-    mapInfoBody: "Selecciona un marcador en el globo para saber más.",
-    storyTitle: "Nuestra historia",
-    storyIntro: "Algunos momentos importantes que marcaron nuestra historia de amor, entre Ecuador, España, Portugal… y Toffee-Topito.",
-    storyItem1Title: "Nuestro encuentro",
-    storyItem1Text: "Todo empieza en Quito. Dos vidas, dos países, un encuentro que lo cambia todo.",
-    storyItem1Fig: "Quito · Nuestros primeros recuerdos juntos",
-    storyItem2Title: "Madrid, una nueva etapa",
-    storyItem2Text: "Madrid se convierte en uno de nuestros puntos de referencia, entre risas, paseos y proyectos que van tomando forma.",
-    storyItem2Fig: "Madrid · Terrazas, paseos y proyectos en pareja",
-    storyItem3Title: "Encuentro de las familias",
-    storyItem3Text: "El encuentro con la familia de Nathalya.",
-    storyItem3Fig: "Ecuador · La familia reunida a nuestro alrededor",
-    storyItem4Title: "Sevilla, ciudad de luz",
-    storyItem4Text: "¡Sevilla y Andalucía, aquí estamos! Comienza una nueva aventura.",
-    storyItem4Fig: "Sevilla · Entre flamenco, sol y complicidad",
-    storyItem5Title: "Adopción de Toffee-Topito",
-    storyItem5Text: "La familia crece con Toffee-Topito.",
-    storyItem5Fig: "Toffee-Topito · La familia crece",
-    storyItem6Title: "La pedida de mano",
-    storyItem6Text: "A orillas del océano, en el Algarve, se hace la pregunta… y la respuesta es sí.",
-    storyItem6Fig: "Algarve · El «sí» que cambia una vida",
-    storyItem7Title: "El gran día",
-    storyItem7Text: "Y por fin, nos casamos. ¡Estamos deseando celebrarlo con vosotros!",
-    datesTitle: "Fecha importante",
-    datesCeremony: "Ceremonia — 14 agosto 2027",
-    infosTitle: "Información práctica",
-    infosDressTitle: "👗 Código de vestimenta",
-    infosDress: "Vestimenta elegante y de verano. ¡Pensad en la arena si la ceremonia es al aire libre!",
-    infosTransportTitle: "🚗 Transporte",
-    infosTransport: "Más información sobre el transporte próximamente. Se organizará un coche compartido si es necesario.",
-    infosHotelTitle: "🏨 Alojamiento",
-    infosHotel: "Próximamente compartiremos una lista de hoteles y alojamientos recomendados.",
-    infosGiftTitle: "🎁 Regalos",
-    infosGift: "Vuestra presencia es el mejor regalo. Aun así, habrá disponible una lista de regalos si lo deseáis.",
-    rsvpTitle: "Confirma tu asistencia",
-    rsvpName: "Nombre y apellido", rsvpNamePh: "Tu nombre completo",
-    rsvpEmail: "Correo electrónico", rsvpEmailPh: "tu@ejemplo.com",
-    rsvpGuests: "Número de personas",
-    rsvpAllergies: "Alergias", rsvpAllergiesPh: "Ninguna",
-    rsvpAddress: "Mi dirección", rsvpAddressPh: "Tu dirección postal",
-    rsvpSubmit: "Enviar",
-    rsvpSending: "Enviando…",
-    rsvpSuccess: "¡Gracias! Tu respuesta se ha enviado correctamente. 💌",
-    rsvpError: "¡Ups! El envío falló. También puedes escribirnos directamente.",
-    rsvpNote: "También puedes escribirnos directamente a pierre3604@gmail.com.",
-    footerHashtag: "#NathalyaEtPierre2027",
-    footerContact: "¿Alguna pregunta? Escríbenos: ",
-    footerNote: "Con amor, Nathalya & Pierre",
-    countryCloseAria: "Cerrar",
-    countryTitleEcuador: "Ecuador · lugares por visitar",
-    countrySubtitleEcuador: "Algunos lugares importantes en nuestra historia, y otros por descubrir.",
-    poi_quito_name: "Quito · Centro histórico",
-    poi_quito_desc: "Capital de Ecuador, fundada en el siglo XVI, con centro colonial declarado Patrimonio UNESCO. Aquí empezó todo para nosotros.",
-    poi_mitad_name: "Mitad del Mundo",
-    poi_mitad_desc: "El monumento de la Mitad del Mundo marca la línea del ecuador, a 28 km al norte de Quito. Latitud 0°0'0\".",
-    poi_galapagos_name: "Islas Galápagos",
-    poi_galapagos_desc: "Archipiélago volcánico con fauna endémica única (tortugas gigantes, iguanas, fragatas).",
-    poi_cotopaxi_name: "Cotopaxi",
-    poi_cotopaxi_desc: "Volcán activo (5 897 m) en la Cordillera de los Andes, refugio y senderismo.",
-    poi_otavalo_name: "Otavalo",
-    poi_otavalo_desc: "Famosa por su mercado artesanal andino, uno de los más coloridos de Sudamérica.",
-    poi_cuenca_name: "Cuenca",
-    poi_cuenca_desc: "Ciudad colonial del sur, su centro histórico es Patrimonio Mundial UNESCO.",
-    poi_podocarpus_name: "Parque nacional Podocarpus",
-    poi_podocarpus_desc: "Bosque nuboso andino cerca de Loja, rico en biodiversidad y cascadas.",
-    poi_tena_name: "Tena · Amazonía",
-    poi_tena_desc: "Puerta de entrada a la Amazonía ecuatoriana, ríos, comunidades Kichwa y lodges.",
-    poi_yasuni_name: "Yasuní",
-    poi_yasuni_desc: "Reserva de biósfera UNESCO, una de las zonas más biodiversas del planeta.",
-    poi_montanita_name: "Montañita",
-    poi_montanita_desc: "Pueblo costero célebre por sus olas y su ambiente bohemio.",
-    poi_banos_name: "Baños de Agua Santa",
-    poi_banos_desc: "Al pie del Tungurahua: cascadas, deportes de aventura y aguas termales.",
-    poi_quilotoa_name: "Quilotoa",
-    poi_quilotoa_desc: "Cráter de un volcán apagado con lago turquesa, senderismo emblemático.",
-    poi_mindo_name: "Mindo",
-    poi_mindo_desc: "Bosque nuboso, observación de colibríes (300+ especies), mariposas y cascadas.",
-    poi_guayaquil_name: "Guayaquil",
-    poi_guayaquil_desc: "Ciudad más grande del país, puerto sobre el río Guayas, malecón y animación.",
-    poi_chimborazo_name: "Chimborazo",
-    poi_chimborazo_desc: "Volcán más alto de Ecuador (6 263 m), punto más lejano del centro de la Tierra.",
-    poi_vilcabamba_name: "Vilcabamba",
-    poi_vilcabamba_desc: "Valle andino apodado el «valle de la eterna juventud» por su longevidad.",
-    poi_lopez_name: "Puerto López",
-    poi_lopez_desc: "Costa pacífica, punto de partida a la Isla de la Plata y avistamiento de ballenas."
+    all: 'Ver todo',
+    cat_ville: 'Ciudades y patrimonio', cat_andes: 'Andes y naturaleza', cat_amazonie: 'Amazonía', cat_galapagos: 'Galápagos',
+    overview: 'Vista general',
+    chooseCity: 'Elige una ciudad…',
+    yourTrip: 'Tu viaje',
+    toQuito: 'hasta Quito',
+    kmBird: 'km en línea recta',
+    sending: 'Validando…',
+    okYes: '¡Gracias! Tu billete está validado. Tenemos muchas ganas de verte en Ecuador.',
+    okNo: 'Gracias por avisarnos. Te echaremos de menos.',
+    err: 'No se ha podido enviar. Inténtalo de nuevo o escríbenos a pierre3604@gmail.com.',
+    checkFields: 'Revisa los campos señalados en caramelo.',
+    passenger: 'Pasajero', classYes: 'Voy', classNo: 'No podré ir',
+    stamp: 'Confirmado', globeLabel: 'Globo interactivo: la Francia de Pierre, nuestra España, el Ecuador de Nathalya'
   }
 };
 
-/* 2. POIs de l'Équateur */
-const POI_LANG_KEYS = {
-  quito: { name: "poi_quito_name", desc: "poi_quito_desc" },
-  mitad: { name: "poi_mitad_name", desc: "poi_mitad_desc" },
-  galapagos: { name: "poi_galapagos_name", desc: "poi_galapagos_desc" },
-  cotopaxi: { name: "poi_cotopaxi_name", desc: "poi_cotopaxi_desc" },
-  otavalo: { name: "poi_otavalo_name", desc: "poi_otavalo_desc" },
-  cuenca: { name: "poi_cuenca_name", desc: "poi_cuenca_desc" },
-  podocarpus: { name: "poi_podocarpus_name", desc: "poi_podocarpus_desc" },
-  tena: { name: "poi_tena_name", desc: "poi_tena_desc" },
-  yasuni: { name: "poi_yasuni_name", desc: "poi_yasuni_desc" },
-  montanita: { name: "poi_montanita_name", desc: "poi_montanita_desc" },
-  banos: { name: "poi_banos_name", desc: "poi_banos_desc" },
-  quilotoa: { name: "poi_quilotoa_name", desc: "poi_quilotoa_desc" },
-  mindo: { name: "poi_mindo_name", desc: "poi_mindo_desc" },
-  guayaquil: { name: "poi_guayaquil_name", desc: "poi_guayaquil_desc" },
-  chimborazo: { name: "poi_chimborazo_name", desc: "poi_chimborazo_desc" },
-  vilcabamba: { name: "poi_vilcabamba_name", desc: "poi_vilcabamba_desc" },
-  lopez: { name: "poi_lopez_name", desc: "poi_lopez_desc" }
-};
+/* ---------- 3. Données ---------- */
+const QUITO = { lat: -0.18, lng: -78.47 };
+
+// Chapitres du globe. Montpellier est le repère « France » : à remplacer si besoin.
+const CHAPTERS = [
+  { id: 'pierre', lat: 43.61, lng: 3.88, view: [34, -22, 1.15], img: '', routeFrom: true,
+    fr: { btn: 'Pierre', meta: 'France · Montpellier', title: 'La France de Pierre', text: 'Le point de départ côté France.' },
+    es: { btn: 'Pierre', meta: 'Francia · Montpellier', title: 'La Francia de Pierre', text: 'El punto de partida en Francia.' } },
+  { id: 'nosotros', lat: 37.39, lng: -5.98, view: [32, -26, 1.15], img: 'images/sevilla-2023.jpeg', routeFrom: true,
+    fr: { btn: 'Nous', meta: 'Espagne · Madrid 2021, Séville depuis 2023', title: 'Notre Espagne', text: 'Madrid d\'abord, puis Séville : notre vie à deux. Et un oui en Algarve, juste à côté, en 2025.' },
+    es: { btn: 'Nosotros', meta: 'España · Madrid 2021, Sevilla desde 2023', title: 'Nuestra España', text: 'Primero Madrid, luego Sevilla: nuestra vida juntos. Y un sí en el Algarve, muy cerca, en 2025.' } },
+  { id: 'nathalya', lat: -0.18, lng: -78.47, view: [6, -62, 1.3], img: 'images/quito-2019.jpeg',
+    fr: { btn: 'Nathalya', meta: 'Équateur · Quito', title: 'L\'Équateur de Nathalya', text: 'Son pays, et la ville où nous nous sommes rencontrés en 2019.' },
+    es: { btn: 'Nathalya', meta: 'Ecuador · Quito', title: 'El Ecuador de Nathalya', text: 'Su país, y la ciudad donde nos conocimos en 2019.' } },
+  { id: 'boda', lat: -1.5, lng: -84.2, view: [-1.3, -83.4, 5.6], img: '', ecuador: true,
+    fr: { btn: 'Le mariage', meta: 'Équateur · 14.08.2027', title: 'La boda', text: 'Les points colorés sont nos lieux préférés. Touchez-en un pour le découvrir sur la carte, plus bas.' },
+    es: { btn: 'La boda', meta: 'Ecuador · 14.08.2027', title: 'La boda', text: 'Los puntos de colores son nuestros lugares favoritos. Toca uno para verlo en el mapa, más abajo.' } }
+];
+// Autres repères de notre histoire
+const MARKS = [
+  { id: 'madrid', lat: 40.42, lng: -3.70, name: 'Madrid' },
+  { id: 'algarve', lat: 37.09, lng: -8.25, name: 'Algarve' }
+];
+const HIGHLIGHT_COUNTRIES = ['France', 'Spain', 'Ecuador'];
+
+// Villes de départ des invités
+const CITIES = [
+  ['Paris', 48.86, 2.35], ['Lyon', 45.76, 4.84], ['Marseille', 43.30, 5.37], ['Montpellier', 43.61, 3.88],
+  ['Toulouse', 43.60, 1.44], ['Bordeaux', 44.84, -0.58], ['Nantes', 47.22, -1.55], ['Lille', 50.63, 3.06],
+  ['Strasbourg', 48.57, 7.75], ['Nice', 43.70, 7.27], ['Bruxelles · Bruselas', 50.85, 4.35], ['Genève · Ginebra', 46.20, 6.14],
+  ['Madrid', 40.42, -3.70], ['Barcelona', 41.39, 2.17], ['Sevilla · Séville', 37.39, -5.98], ['Valencia', 39.47, -0.38],
+  ['Málaga', 36.72, -4.42], ['Bilbao', 43.26, -2.93], ['Zaragoza', 41.65, -0.89], ['Granada', 37.18, -3.60],
+  ['Lisboa · Lisbonne', 38.72, -9.14], ['London · Londres', 51.51, -0.13]
+].map(([name, lat, lng]) => ({ name, lat, lng }));
+
+const CATEGORIES = [
+  { id: 'ville', color: C.caramel },
+  { id: 'andes', color: C.olive },
+  { id: 'amazonie', color: C.foret },
+  { id: 'galapagos', color: C.cendre }
+];
+const CAT_COLOR = Object.fromEntries(CATEGORIES.map(c => [c.id, c.color]));
 
 const POIS = [
-  { id: "quito",     lat: -0.1807, lng: -78.4678 },
-  { id: "mitad",     lat:  0.0022, lng: -78.4559 },
-  { id: "galapagos", lat: -0.7893, lng: -91.0824 },
-  { id: "cotopaxi",  lat: -0.6817, lng: -78.4378 },
-  { id: "otavalo",   lat:  0.2345, lng: -78.2616 },
-  { id: "cuenca",    lat: -2.9001, lng: -79.0059 },
-  { id: "podocarpus",lat: -4.1067, lng: -79.1186 },
-  { id: "tena",      lat: -0.9930, lng: -77.8129 },
-  { id: "yasuni",    lat: -1.0667, lng: -75.9667 },
-  { id: "montanita", lat: -1.8265, lng: -80.7540 },
-  { id: "banos",     lat: -1.3958, lng: -78.4247 },
-  { id: "quilotoa",  lat: -0.8636, lng: -78.8986 },
-  { id: "mindo",     lat:  0.0500, lng: -78.7667 },
-  { id: "guayaquil", lat: -2.1709, lng: -79.9224 },
-  { id: "chimborazo",lat: -1.4692, lng: -78.8175 },
-  { id: "vilcabamba",lat: -4.2586, lng: -79.2236 },
-  { id: "lopez",     lat: -1.5547, lng: -80.8536 }
+  { id: 'quito', cat: 'ville', lat: -0.2203, lng: -78.5125,
+    fr: { name: 'Quito, centre historique', meta: 'Point d\'arrivée, 2 à 3 jours', desc: 'L\'un des centres coloniaux les mieux préservés d\'Amérique latine, classé à l\'UNESCO. Montez au TelefériQo pour voir les volcans. Le soir, préférez les quartiers animés au centre historique.' },
+    es: { name: 'Quito, centro histórico', meta: 'Punto de llegada, 2 a 3 días', desc: 'Uno de los centros coloniales mejor conservados de América Latina, Patrimonio de la UNESCO. Subid al TelefériQo para ver los volcanes. De noche, mejor otros barrios que el centro histórico.' } },
+  { id: 'mitad', cat: 'ville', lat: 0.0022, lng: -78.4558,
+    fr: { name: 'Mitad del Mundo', meta: '1 h depuis Quito, une demi-journée', desc: 'Un pied dans chaque hémisphère, sur la ligne de l\'équateur. Le musée Intiñan, juste à côté, vaut le détour.' },
+    es: { name: 'Mitad del Mundo', meta: '1 h desde Quito, medio día', desc: 'Un pie en cada hemisferio, sobre la línea ecuatorial. El museo Intiñan, justo al lado, merece la pena.' } },
+  { id: 'otavalo', cat: 'ville', lat: 0.2343, lng: -78.2620,
+    fr: { name: 'Otavalo', meta: '2 h depuis Quito, 1 jour', desc: 'Le grand marché artisanal des Andes, surtout le samedi : textiles, ponchos, couleurs. La lagune de Cuicocha est tout près.' },
+    es: { name: 'Otavalo', meta: '2 h desde Quito, 1 día', desc: 'El gran mercado artesanal de los Andes, sobre todo el sábado: textiles, ponchos y color. La laguna de Cuicocha está muy cerca.' } },
+  { id: 'mindo', cat: 'andes', lat: -0.0517, lng: -78.7744,
+    fr: { name: 'Mindo', meta: '2 h depuis Quito, 1 à 2 jours', desc: 'Forêt de nuages, colibris par centaines, papillons, cascades et tyrolienne.' },
+    es: { name: 'Mindo', meta: '2 h desde Quito, 1 a 2 días', desc: 'Bosque nublado, colibríes por cientos, mariposas, cascadas y tirolina.' } },
+  { id: 'papallacta', cat: 'andes', lat: -0.3667, lng: -78.1431,
+    fr: { name: 'Papallacta', meta: '1 h 30 depuis Quito, 1 jour', desc: 'Des bains thermaux à 3 300 m, au milieu des montagnes. Parfait pour récupérer du voyage.' },
+    es: { name: 'Papallacta', meta: '1 h 30 desde Quito, 1 día', desc: 'Termas a 3 300 m, rodeadas de montañas. Perfecto para recuperarse del viaje.' } },
+  { id: 'cotopaxi', cat: 'andes', lat: -0.6836, lng: -78.4378,
+    fr: { name: 'Volcan Cotopaxi', meta: '1 h 30 depuis Quito, 1 jour', desc: 'Le cône parfait de 5 897 m. Randonnée vers le refuge, lagune de Limpiopungo et chevaux sauvages dans le páramo.' },
+    es: { name: 'Volcán Cotopaxi', meta: '1 h 30 desde Quito, 1 día', desc: 'El cono perfecto de 5 897 m. Caminata hacia el refugio, laguna de Limpiopungo y caballos salvajes en el páramo.' } },
+  { id: 'quilotoa', cat: 'andes', lat: -0.8580, lng: -78.9020,
+    fr: { name: 'Lagune de Quilotoa', meta: '4 h depuis Quito, 1 à 2 jours', desc: 'Un lac turquoise au fond d\'un cratère. On descend jusqu\'à l\'eau, ou on fait le tour par la crête.' },
+    es: { name: 'Laguna del Quilotoa', meta: '4 h desde Quito, 1 a 2 días', desc: 'Un lago turquesa en el fondo de un cráter. Se baja hasta el agua o se rodea por la cresta.' } },
+  { id: 'banos', cat: 'andes', lat: -1.3964, lng: -78.4247,
+    fr: { name: 'Baños de Agua Santa', meta: '3 h 30 depuis Quito, 2 jours', desc: 'La route des cascades à vélo, le Pailón del Diablo, la balançoire du bout du monde et des bains thermaux pour finir.' },
+    es: { name: 'Baños de Agua Santa', meta: '3 h 30 desde Quito, 2 días', desc: 'La ruta de las cascadas en bici, el Pailón del Diablo, el columpio del fin del mundo y aguas termales para terminar.' } },
+  { id: 'chimborazo', cat: 'andes', lat: -1.4692, lng: -78.8175,
+    fr: { name: 'Volcan Chimborazo', meta: '4 h depuis Quito, 1 jour', desc: 'Le point de la Terre le plus éloigné de son centre. On monte en voiture jusqu\'à 4 800 m, au milieu des vigognes.' },
+    es: { name: 'Volcán Chimborazo', meta: '4 h desde Quito, 1 día', desc: 'El punto de la Tierra más alejado de su centro. Se sube en coche hasta 4 800 m, entre vicuñas.' } },
+  { id: 'ingapirca', cat: 'ville', lat: -2.5450, lng: -78.8750,
+    fr: { name: 'Ingapirca', meta: '2 h depuis Cuenca, une demi-journée', desc: 'Les plus grandes ruines incas du pays, avec un temple du Soleil posé sur les hauteurs.' },
+    es: { name: 'Ingapirca', meta: '2 h desde Cuenca, medio día', desc: 'Las mayores ruinas incas del país, con un templo del Sol en lo alto.' } },
+  { id: 'cuenca', cat: 'ville', lat: -2.8974, lng: -79.0045,
+    fr: { name: 'Cuenca', meta: '1 h de vol depuis Quito, 2 jours', desc: 'La plus belle ville coloniale du sud, classée à l\'UNESCO : coupoles bleues, rivières, ateliers de chapeaux en paille toquilla.' },
+    es: { name: 'Cuenca', meta: '1 h de vuelo desde Quito, 2 días', desc: 'La ciudad colonial más bonita del sur, Patrimonio de la UNESCO: cúpulas azules, ríos y talleres de sombreros de paja toquilla.' } },
+  { id: 'podocarpus', cat: 'andes', lat: -4.1150, lng: -79.1650,
+    fr: { name: 'Parc national Podocarpus', meta: 'Près de Loja, 1 jour', desc: 'Forêts de nuages et lagunes d\'altitude, l\'un des parcs les plus riches en oiseaux du pays.' },
+    es: { name: 'Parque Nacional Podocarpus', meta: 'Cerca de Loja, 1 día', desc: 'Bosques nublados y lagunas de altura, uno de los parques con más aves del país.' } },
+  { id: 'vilcabamba', cat: 'andes', lat: -4.2600, lng: -79.2222,
+    fr: { name: 'Vilcabamba', meta: '1 h depuis Loja, 2 jours', desc: 'La « vallée de la longévité » : climat doux, randonnées tranquilles et villages paisibles.' },
+    es: { name: 'Vilcabamba', meta: '1 h desde Loja, 2 días', desc: 'El «valle de la longevidad»: clima suave, caminatas tranquilas y pueblos apacibles.' } },
+  { id: 'tena', cat: 'amazonie', lat: -0.9938, lng: -77.8129,
+    fr: { name: 'Tena', meta: '4 h depuis Quito, 2 à 3 jours', desc: 'La porte d\'entrée la plus simple vers l\'Amazonie : rafting, lodges en forêt, communautés kichwa. Vaccin contre la fièvre jaune recommandé.' },
+    es: { name: 'Tena', meta: '4 h desde Quito, 2 a 3 días', desc: 'La puerta más sencilla a la Amazonía: rafting, lodges en la selva y comunidades kichwa. Se recomienda la vacuna de la fiebre amarilla.' } },
+  { id: 'santacruz', cat: 'galapagos', lat: -0.7430, lng: -90.3150,
+    fr: { name: 'Santa Cruz', meta: 'Vol depuis Quito avec escale, 4 à 5 jours', desc: 'Le cœur des Galápagos : tortues géantes en liberté, la plage de Tortuga Bay et la station Charles-Darwin.' },
+    es: { name: 'Santa Cruz', meta: 'Vuelo desde Quito con escala, 4 a 5 días', desc: 'El corazón de Galápagos: tortugas gigantes en libertad, la playa de Tortuga Bay y la estación Charles Darwin.' } },
+  { id: 'isabela', cat: 'galapagos', lat: -0.9560, lng: -90.9650,
+    fr: { name: 'Isabela', meta: '2 h de bateau depuis Santa Cruz', desc: 'La plus grande île, la plus sauvage : flamants, manchots, et snorkeling avec les raies à Los Túneles.' },
+    es: { name: 'Isabela', meta: '2 h en barco desde Santa Cruz', desc: 'La isla más grande y más salvaje: flamencos, pingüinos y snorkel con mantas en Los Túneles.' } },
+  { id: 'sancristobal', cat: 'galapagos', lat: -0.9020, lng: -89.6100,
+    fr: { name: 'San Cristóbal', meta: 'Vol depuis Quito avec escale', desc: 'Les otaries dorment sur les bancs du port. Plongée au Kicker Rock, plages de sable blanc.' },
+    es: { name: 'San Cristóbal', meta: 'Vuelo desde Quito con escala', desc: 'Los lobos marinos duermen en los bancos del puerto. Buceo en el Kicker Rock y playas de arena blanca.' } }
 ];
 
-/* 3. Moteur i18n */
-function getCurrentLang() {
-  try { return localStorage.getItem('wedding-lang') || document.documentElement.lang || 'fr'; }
-  catch (e) { return document.documentElement.lang || 'fr'; }
+const ITINERARIES = [
+  { id: 'volcans', stops: ['quito', 'mitad', 'otavalo', 'cotopaxi', 'quilotoa', 'banos'],
+    fr: { title: 'Quito et l\'allée des volcans', days: '5 à 6 jours' }, es: { title: 'Quito y la avenida de los volcanes', days: '5 a 6 días' } },
+  { id: 'nature', stops: ['quito', 'mindo', 'papallacta', 'tena'],
+    fr: { title: 'Forêt de nuages et Amazonie', days: '4 à 5 jours' }, es: { title: 'Bosque nublado y Amazonía', days: '4 a 5 días' } },
+  { id: 'galapagos', stops: ['quito', 'santacruz', 'isabela', 'sancristobal'],
+    fr: { title: 'Les îles Galápagos', days: '5 à 7 jours' }, es: { title: 'Las islas Galápagos', days: '5 a 7 días' } },
+  { id: 'sud', stops: ['cuenca', 'ingapirca', 'podocarpus', 'vilcabamba'],
+    fr: { title: 'Le Sud, de Cuenca à Vilcabamba', days: '4 à 5 jours' }, es: { title: 'El Sur, de Cuenca a Vilcabamba', days: '4 a 5 días' } }
+];
+
+const byId = (list, id) => list.find(x => x.id === id);
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const D2R = Math.PI / 180;
+function distanceKm(a, b) {
+  const φ1 = a.lat * D2R, φ2 = b.lat * D2R, dφ = φ2 - φ1, dλ = (b.lng - a.lng) * D2R;
+  const h = Math.sin(dφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(dλ / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
 }
 
-function applyI18n(lang) {
-  const dict = translations[lang] || translations.es;
+/* ---------- 4. Langue ---------- */
+let LANG = 'fr';
+const tr = k => (T[LANG] && T[LANG][k]) || T.fr[k] || k;
+const loc = o => o[LANG] || o.fr;
+const fmtKm = km => new Intl.NumberFormat(LANG === 'es' ? 'es-ES' : 'fr-FR').format(Math.round(km / 50) * 50);
 
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (dict[key] !== undefined) el.textContent = dict[key];
-  });
-
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    const key = el.getAttribute('data-i18n-placeholder');
-    if (dict[key] !== undefined) el.setAttribute('placeholder', dict[key]);
-  });
-
-  document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
-    const key = el.getAttribute('data-i18n-aria-label');
-    if (dict[key] !== undefined) el.setAttribute('aria-label', dict[key]);
-  });
-
-  document.querySelectorAll('[data-fr][data-es]').forEach(el => {
-    const v = el.dataset[lang];
-    if (v) el.textContent = v;
-  });
-  document.querySelectorAll('option[data-fr][data-es]').forEach(opt => {
-    const v = opt.dataset[lang];
-    if (v) opt.textContent = v;
-  });
-
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.lang === lang);
-  });
-
-  document.documentElement.lang = lang;
-  try { localStorage.setItem('wedding-lang', lang); } catch (e) {}
-
-  // Re-render les contenus dynamiques dépendant de la langue
-  renderCityInfo();
-  renderGlobeTooltip();
+function detectLang() {
+  let saved = null;
+  try { saved = localStorage.getItem('wedding-lang'); } catch (e) { /* stockage indisponible */ }
+  if (saved === 'fr' || saved === 'es') return saved;
+  return (navigator.language || 'fr').toLowerCase().startsWith('es') ? 'es' : 'fr';
 }
 
-function setLang(lang) { applyI18n(lang); }
+function setLang(lang) {
+  LANG = lang === 'es' ? 'es' : 'fr';
+  document.documentElement.lang = LANG;
+  try { localStorage.setItem('wedding-lang', LANG); } catch (e) { /* ignore */ }
+  $$('[data-fr]').forEach(el => { const v = el.getAttribute('data-' + LANG); if (v !== null) el.textContent = v; });
+  $$('.lang-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));
+  const g = $('#globe'); if (g) g.setAttribute('aria-label', tr('globeLabel'));
+  MapTab.render();
+  Explorer.render();
+  Globe.relabel();
+  if (lastStatus) setStatus(lastStatus);
+}
 
-/* 4. Onglets */
-function showTab(id) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active', 'visible-tab'));
-  const cur = document.getElementById(id);
-  if (cur) {
-    cur.classList.add('active');
-    requestAnimationFrame(() => cur.classList.add('visible-tab'));
+/* ---------- 5. Onglets et menu ---------- */
+let currentTab = null;
+function showTab(hash) {
+  let id = (hash || '').replace('#', '');
+  let target = null;
+  if (!TABS.includes(id)) {
+    // Ancre à l'intérieur d'un onglet (ex. #equateur) : on ouvre l'onglet puis on y descend
+    const el = id && document.getElementById(id);
+    const tab = el && el.closest('section[data-tab]');
+    if (tab) { target = el; id = tab.dataset.tab; } else id = 'inicio';
   }
-  document.querySelectorAll('.nav-link').forEach(a => {
-    a.classList.toggle('active', a.dataset.tab === id);
-  });
-  window.scrollTo(0, 0);
-  if (typeof toggleMapOnHome === 'function') toggleMapOnHome();
+  const changed = currentTab !== id;
+  currentTab = id;
+  $$('section[data-tab]').forEach(s => { s.hidden = s.dataset.tab !== id; });
+  $$('.line a').forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + id ? 'page' : 'false'));
+  if (target) requestAnimationFrame(() => target.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'start' }));
+  else if (changed) window.scrollTo({ top: 0, behavior: 'auto' });
+  if (id === 'mapa') { Globe.activate(); Explorer.activate(); }
+  closeMenu();
 }
 
-/* 5. Compte à rebours */
-function startCountdown() {
-  const daysEl = document.getElementById('cd-days');
-  const hoursEl = document.getElementById('cd-hours');
-  const minutesEl = document.getElementById('cd-minutes');
-  const secondsEl = document.getElementById('cd-seconds');
-  if (!daysEl) return;
-  // 14 août 2027 — 11:00 (heure locale du visiteur)
-  const target = new Date('2027-08-14T11:00:00');
-  function update() {
-    const diff = target - new Date();
-    if (diff <= 0) {
-      daysEl.textContent = '0';
-      hoursEl.textContent = '0';
-      minutesEl.textContent = '0';
-      secondsEl.textContent = '0';
-      return;
-    }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff / 3600000) % 24);
-    const m = Math.floor((diff / 60000) % 60);
-    const s = Math.floor((diff / 1000) % 60);
-    daysEl.textContent = String(d);
-    hoursEl.textContent = String(h);
-    minutesEl.textContent = String(m);
-    secondsEl.textContent = String(s);
-  }
-  update();
-  setInterval(update, 1000);
-}
-
-/* 6. Apparition au scroll */
-function revealOnScroll() {
-  document.querySelectorAll('.reveal').forEach(el => {
-    const top = el.getBoundingClientRect().top;
-    if (top < window.innerHeight - 80) el.classList.add('visible');
-  });
-}
-
-function highlightTimelineOnScroll() {
-  const trigger = window.innerHeight * 0.6;
-  document.querySelectorAll('.timeline-item').forEach(item => {
-    const r = item.getBoundingClientRect();
-    item.classList.toggle('in-view', r.top < trigger && r.bottom > 0);
-  });
-}
-
-window.addEventListener('scroll', () => {
-  revealOnScroll();
-  highlightTimelineOnScroll();
-});
-
-/* 7. Modale pays (Leaflet) */
-const countryPOIs = {
-  'Ecuador': {
-    center: [-1.4, -78.5], zoom: 6,
-    titleKey: 'countryTitleEcuador', subtitleKey: 'countrySubtitleEcuador',
-    places: [
-      { name: 'Quito', lat: -0.1807, lng: -78.4678, desc: "Capitale, centre historique classé à l'UNESCO. C'est ici que tout a commencé pour nous." },
-      { name: 'Îles Galápagos', lat: -0.9538, lng: -90.9656, desc: 'Faune unique au monde, snorkeling et tortues géantes.' },
-      { name: 'Baños de Agua Santa', lat: -1.3958, lng: -78.4247, desc: "Cascades, sports d'aventure, sources thermales." },
-      { name: 'Cuenca', lat: -2.9006, lng: -79.0045, desc: 'Ville coloniale, patrimoine mondial UNESCO.' },
-      { name: 'Otavalo', lat: 0.2345, lng: -78.2616, desc: 'Célèbre marché artisanal andin.' },
-      { name: 'Mindo', lat: 0.0500, lng: -78.7667, desc: "Forêt nuageuse, observation d'oiseaux et colibris." },
-      { name: 'Cotopaxi', lat: -0.6836, lng: -78.4386, desc: 'Volcan actif emblématique, randonnée.' }
-    ]
-  }
+const closeMenu = () => {
+  const nav = $('#lineNav'), t = $('#menuToggle');
+  if (!nav) return;
+  nav.classList.remove('open'); $('#siteHeader').classList.remove('menu-open');
+  t.setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
 };
 
-let countryDetailMap = null;
+function initNav() {
+  const nav = $('#lineNav'), t = $('#menuToggle');
+  t.addEventListener('click', () => {
+    const open = !nav.classList.contains('open');
+    nav.classList.toggle('open', open); $('#siteHeader').classList.toggle('menu-open', open);
+    t.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+  $$('.lang-btn').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+  window.addEventListener('hashchange', () => showTab(location.hash));
+  // Cliquer sur la gare déjà active ferme simplement le menu
+  $$('.line a').forEach(a => a.addEventListener('click', () => { if (a.getAttribute('href') === location.hash) showTab(location.hash); }));
+}
 
-function openCountryModal(name) {
-  const data = countryPOIs[name];
-  const modal = document.getElementById('countryModal');
-  const title = document.getElementById('countryModalTitle');
-  const subtitle = document.getElementById('countryModalSubtitle');
-  const mapDiv = document.getElementById('countryDetailMap');
-  if (!data || !modal || !title || !subtitle || !mapDiv) return;
-  if (typeof L === 'undefined') return;
+/* ---------- 6. Compte à rebours ---------- */
+function initCountdown() {
+  const el = { d: $('#cd-days'), h: $('#cd-hours'), m: $('#cd-minutes'), s: $('#cd-seconds') };
+  if (!el.d) return;
+  const tick = () => {
+    const diff = Math.max(0, CEREMONY - Date.now());
+    el.d.textContent = String(Math.floor(diff / 864e5)).padStart(3, '0');
+    el.h.textContent = String(Math.floor(diff / 36e5) % 24).padStart(2, '0');
+    el.m.textContent = String(Math.floor(diff / 6e4) % 60).padStart(2, '0');
+    el.s.textContent = String(Math.floor(diff / 1e3) % 60).padStart(2, '0');
+  };
+  tick(); setInterval(tick, 1000);
+}
 
-  const lang = getCurrentLang();
-  const dict = translations[lang] || translations.es;
-  title.textContent = dict[data.titleKey] || name;
-  subtitle.textContent = dict[data.subtitleKey] || '';
+/* ---------- Onglet carte : chapitres, fiche, ville de départ ---------- */
+const MapTab = (function () {
+  let selected = { kind: 'chapter', id: 'pierre' };
+  let fromCity = null;
 
-  modal.classList.add('visible');
-  document.body.style.overflow = 'hidden';
+  function select(sel, fly) {
+    selected = sel;
+    render();
+    if (!fly) return;
+    if (sel.kind === 'chapter') {
+      const ch = byId(CHAPTERS, sel.id);
+      Globe.flyTo(ch.view[0], ch.view[1], ch.view[2]);
+    } else if (sel.kind === 'from' && fromCity) {
+      Globe.flyTo((fromCity.lat + QUITO.lat) / 2 + 12, (fromCity.lng + QUITO.lng) / 2, 1);
+    }
+  }
 
-  setTimeout(() => {
-    if (!countryDetailMap) {
-      countryDetailMap = L.map(mapDiv).setView(data.center, data.zoom);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap', maxZoom: 18
-      }).addTo(countryDetailMap);
-    } else {
-      countryDetailMap.setView(data.center, data.zoom);
-      countryDetailMap.eachLayer(layer => {
-        if (layer instanceof L.Marker) countryDetailMap.removeLayer(layer);
+  function render() {
+    // Chapitres
+    const box = $('#chapters');
+    if (box) {
+      box.innerHTML = '';
+      CHAPTERS.forEach(ch => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'chapter-btn';
+        b.textContent = loc(ch).btn;
+        b.setAttribute('aria-pressed', String(selected.kind === 'chapter' && selected.id === ch.id));
+        b.addEventListener('click', () => select({ kind: 'chapter', id: ch.id }, true));
+        box.appendChild(b);
       });
     }
-    data.places.forEach(place => {
-      const marker = L.marker([place.lat, place.lng]).addTo(countryDetailMap);
-      marker.bindPopup(`<strong>${place.name}</strong><br>${place.desc}`);
-    });
-    countryDetailMap.invalidateSize();
-  }, 60);
-}
 
-function closeCountryModal() {
-  const modal = document.getElementById('countryModal');
-  if (modal) modal.classList.remove('visible');
-  document.body.style.overflow = '';
-}
+    // Liste des villes de départ
+    const sel = $('#fromCity');
+    if (sel) {
+      const cur = sel.value;
+      sel.innerHTML = '';
+      const o0 = document.createElement('option'); o0.value = ''; o0.textContent = tr('chooseCity'); sel.appendChild(o0);
+      CITIES.forEach((c, i) => { const o = document.createElement('option'); o.value = String(i); o.textContent = c.name; sel.appendChild(o); });
+      sel.value = cur;
+    }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeCountryModal();
-});
-
-document.addEventListener('click', e => {
-  const modal = document.getElementById('countryModal');
-  if (!modal || !modal.classList.contains('visible')) return;
-  if (e.target === modal || e.target.classList.contains('country-modal-content')) {
-    // click outside content handled separately; close on overlay click below
+    // Fiche
+    const img = $('#infoImg');
+    let meta = '', title = '', text = '', dist = '', src = '';
+    if (selected.kind === 'chapter') {
+      const ch = byId(CHAPTERS, selected.id), d = loc(ch);
+      ({ meta, title, text } = d); src = ch.img;
+      if (ch.routeFrom) dist = `${fmtKm(distanceKm(ch, QUITO))} ${tr('kmBird')} ${tr('toQuito')}`;
+    } else if (selected.kind === 'from' && fromCity) {
+      meta = tr('yourTrip'); title = fromCity.name.split(' · ')[0];
+      text = '';
+      dist = `${fmtKm(distanceKm(fromCity, QUITO))} ${tr('kmBird')} ${tr('toQuito')}`;
+    } else if (selected.kind === 'poi') {
+      const p = byId(POIS, selected.id), d = loc(p);
+      meta = d.meta; title = d.name; text = d.desc;
+    }
+    $('#infoMeta').textContent = meta;
+    $('#infoTitle').textContent = title;
+    $('#infoText').textContent = text;
+    $('#infoDist').textContent = dist;
+    if (src) { img.src = src; img.alt = title; img.hidden = false; } else { img.hidden = true; img.removeAttribute('src'); }
+    $('#infoCard').style.gridTemplateColumns = src ? '' : '1fr';
   }
-  if (e.target === modal) closeCountryModal();
-});
 
-// ---------------- World geo data (inline) ----------------
+  function init() {
+    const sel = $('#fromCity');
+    if (sel) sel.addEventListener('change', () => {
+      fromCity = sel.value === '' ? null : CITIES[+sel.value];
+      Globe.setFromCity(fromCity);
+      if (fromCity) select({ kind: 'from' }, true);
+      else select({ kind: 'chapter', id: 'pierre' }, true);
+    });
+  }
 
-// Auto-generated from world-atlas countries-110m (Natural Earth, public domain).
-// Simplified to 1-decimal precision (~11 km). Compact JS literal.
+  return {
+    init, render, select,
+    selectPoi(id) { select({ kind: 'poi', id }, false); Explorer.select(id, { fly: true, scrollList: true }); },
+    selectEcuador() { select({ kind: 'chapter', id: 'boda' }, true); },
+    get selected() { return selected; }
+  };
+})();
+
+/* ---------- 7. Globe ---------- */
+const Globe = (function () {
+  const s = {
+    el: null, canvas: null, ctx: null, dpr: 1, size: 0, ready: false,
+    lon: -22, lat: 34, k: 1.15, target: null,
+    vLon: 0, vLat: 0, dragging: false, moved: 0, last: null, lastInteract: 0,
+    hover: null, hits: [], visible: true, t0: performance.now(),
+    rings: [], ecuadorRings: [], from: null, resetBtn: null
+  };
+
+  function prep() {
+    WORLD_GEO.forEach(country => {
+      const hi = HIGHLIGHT_COUNTRIES.includes(country.name);
+      const ec = country.name === 'Ecuador';
+      country.polys.forEach(poly => poly.forEach(ring => {
+        const arr = new Float32Array(ring.length * 3);
+        ring.forEach(([lng, lat], i) => {
+          const φ = lat * D2R, λ = lng * D2R, cφ = Math.cos(φ);
+          arr[i * 3] = cφ * Math.sin(λ); arr[i * 3 + 1] = cφ * Math.cos(λ); arr[i * 3 + 2] = Math.sin(φ);
+        });
+        s.rings.push({ arr, hi });
+        if (ec) s.ecuadorRings.push(ring);
+      }));
+    });
+  }
+  function vec(lat, lng) { const φ = lat * D2R, λ = lng * D2R, cφ = Math.cos(φ); return [cφ * Math.sin(λ), cφ * Math.cos(λ), Math.sin(φ)]; }
+
+  let cL, sL, cP, sP;
+  function setView() { cL = Math.cos(s.lon * D2R); sL = Math.sin(s.lon * D2R); cP = Math.cos(s.lat * D2R); sP = Math.sin(s.lat * D2R); }
+  function proj(a, b, c) { const x = a * cL - b * sL, cc = b * cL + a * sL; return [x, cP * c - sP * cc, sP * c + cP * cc]; }
+  const radius = () => (s.size / 2 - 6 * s.dpr) * s.k;
+
+  function unproject(px, py) {
+    const R = radius(), x = (px - s.size / 2) / R, y = (s.size / 2 - py) / R, rho = Math.hypot(x, y);
+    if (rho > 1) return null;
+    if (rho === 0) return { lat: s.lat, lng: s.lon };
+    const c = Math.asin(rho), lat0 = s.lat * D2R, lon0 = s.lon * D2R;
+    const lat = Math.asin(Math.cos(c) * Math.sin(lat0) + y * Math.sin(c) * Math.cos(lat0) / rho);
+    const lng = lon0 + Math.atan2(x * Math.sin(c), rho * Math.cos(c) * Math.cos(lat0) - y * Math.sin(c) * Math.sin(lat0));
+    return { lat: lat / D2R, lng: ((lng / D2R + 540) % 360) - 180 };
+  }
+  function pointInRing(lng, lat, ring) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i], [xj, yj] = ring[j];
+      if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) inside = !inside;
+    }
+    return inside;
+  }
+
+  function resize() {
+    if (!s.el) return;
+    const w = s.el.getBoundingClientRect().width;
+    if (!w) return;
+    s.dpr = Math.min(2, window.devicePixelRatio || 1);
+    s.size = Math.round(w * s.dpr);
+    s.canvas.width = s.size; s.canvas.height = s.size;
+  }
+
+  // ---- Dessin ----
+  function draw(now) {
+    const ctx = s.ctx, W = s.size, R = radius(), cx = W / 2, cy = W / 2;
+    if (!W) return;
+    setView();
+    ctx.clearRect(0, 0, W, W);
+
+    // Océan ivoire, cerclé d'olive
+    ctx.fillStyle = '#F4F2EA';
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.clip();
+
+    // Graticule caramel très fin
+    ctx.strokeStyle = 'rgba(139,90,43,0.16)'; ctx.lineWidth = 0.8 * s.dpr;
+    for (let lat = -60; lat <= 60; lat += 20) gridLine(i => [lat, -180 + i * 5], 73, R, cx, cy);
+    for (let lng = -180; lng < 180; lng += 20) gridLine(i => [-85 + i * 5, lng], 35, R, cx, cy);
+
+    // Terres en lin, France / Espagne / Équateur en olive
+    ctx.lineJoin = 'round';
+    for (const ring of s.rings) {
+      const a = ring.arr, n = a.length / 3;
+      let anyFront = false;
+      ctx.beginPath();
+      for (let i = 0; i < n; i++) {
+        let [x, y, z] = proj(a[i * 3], a[i * 3 + 1], a[i * 3 + 2]);
+        if (z > 0) anyFront = true; else { const m = Math.hypot(x, y) || 1; x /= m; y /= m; }
+        const px = cx + x * R, py = cy - y * R;
+        i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+      }
+      if (!anyFront) continue;
+      ctx.closePath();
+      ctx.fillStyle = ring.hi ? C.olive : '#E0D5C6';
+      ctx.fill();
+      ctx.strokeStyle = ring.hi ? 'rgba(61,90,30,0.9)' : 'rgba(106,117,80,0.45)';
+      ctx.lineWidth = 0.7 * s.dpr; ctx.stroke();
+    }
+    ctx.restore();
+
+    ctx.strokeStyle = C.olive; ctx.lineWidth = 1.5 * s.dpr;
+    ctx.beginPath(); ctx.arc(cx, cy, Math.min(R, W), 0, Math.PI * 2); ctx.stroke();
+
+    // Voies ferrées vers Quito
+    const tA = REDUCED_MOTION ? 0.999 : ((now - s.t0) / 5200) % 1;
+    const q = vec(QUITO.lat, QUITO.lng);
+    CHAPTERS.filter(c => c.routeFrom).forEach((c, i) => railway(vec(c.lat, c.lng), q, (tA + i * 0.4) % 1, R, cx, cy, false));
+    if (s.from) railway(vec(s.from.lat, s.from.lng), q, tA, R, cx, cy, true);
+
+    // Marqueurs
+    s.hits = [];
+    const sel = MapTab.selected;
+    if (s.k > 2.4) {
+      POIS.forEach(p => {
+        const P = screen(p.lat, p.lng, R, cx, cy); if (!P) return;
+        const on = (s.hover && s.hover.id === p.id) || (sel.kind === 'poi' && sel.id === p.id);
+        dot(P.x, P.y, on ? 7.5 : 5.5, CAT_COLOR[p.cat], C.creme);
+        if (on) label(P.x, P.y, loc(p).name, true);
+        s.hits.push({ kind: 'poi', id: p.id, x: P.x, y: P.y, r: 15 * s.dpr });
+      });
+    } else {
+      const stations = [
+        { id: 'pierre', lat: 43.61, lng: 3.88, name: 'Montpellier' },
+        { id: 'madrid', lat: 40.42, lng: -3.70, name: 'Madrid', above: true },
+        { id: 'nosotros', lat: 37.39, lng: -5.98, name: 'Sevilla', below: true },
+        { id: 'algarve', lat: 37.09, lng: -8.25, name: 'Algarve', quiet: true },
+        { id: 'nathalya', lat: QUITO.lat, lng: QUITO.lng, name: 'Quito', main: true }
+      ];
+      if (s.from) stations.push({ id: 'from', lat: s.from.lat, lng: s.from.lng, name: s.from.name.split(' · ')[0], from: true });
+      stations.forEach(st => {
+        const P = screen(st.lat, st.lng, R, cx, cy); if (!P) return;
+        const on = (s.hover && s.hover.id === st.id) || (sel.kind === 'chapter' && sel.id === st.id);
+        if (st.main) pulse(P.x, P.y, now);
+        station(P.x, P.y, st.main ? 6.5 : 4.8, st.main || on);
+        if (!st.quiet || on) label(P.x, P.y, st.name, on || st.main, st.below);
+        if (!['madrid', 'algarve', 'from'].includes(st.id)) s.hits.push({ kind: 'chapter', id: st.id, x: P.x, y: P.y, r: 16 * s.dpr });
+      });
+    }
+  }
+
+  function screen(lat, lng, R, cx, cy) {
+    const v = vec(lat, lng), [x, y, z] = proj(v[0], v[1], v[2]);
+    if (z <= 0.04) return null;
+    return { x: cx + x * R, y: cy - y * R };
+  }
+  function gridLine(fn, n, R, cx, cy) {
+    const ctx = s.ctx; ctx.beginPath(); let pen = false;
+    for (let i = 0; i < n; i++) {
+      const [lat, lng] = fn(i), v = vec(lat, lng), [x, y, z] = proj(v[0], v[1], v[2]);
+      if (z > 0) { const px = cx + x * R, py = cy - y * R; pen ? ctx.lineTo(px, py) : ctx.moveTo(px, py); pen = true; } else pen = false;
+    }
+    ctx.stroke();
+  }
+
+  // Arc de grand cercle légèrement soulevé, dessiné comme une voie ferrée
+  function railway(A, B, phase, R, cx, cy, strong) {
+    const ctx = s.ctx;
+    const omega = Math.acos(Math.max(-1, Math.min(1, A[0] * B[0] + A[1] * B[1] + A[2] * B[2])));
+    const lift = 0.05 + omega * 0.08, N = 90, so = Math.sin(omega), pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N, f1 = Math.sin((1 - t) * omega) / so, f2 = Math.sin(t * omega) / so;
+      const [x, y, z] = proj(A[0] * f1 + B[0] * f2, A[1] * f1 + B[1] * f2, A[2] * f1 + B[2] * f2);
+      const h = 1 + lift * Math.sin(Math.PI * t);
+      pts.push({ x: cx + x * R * h, y: cy - y * R * h, vis: z > 0 || (x * x + y * y) * h * h > 1 });
+    }
+    // traverses
+    ctx.strokeStyle = strong ? 'rgba(139,90,43,0.85)' : 'rgba(139,90,43,0.55)';
+    ctx.lineWidth = 1 * s.dpr;
+    ctx.beginPath();
+    for (let i = 1; i < N; i += 2) {
+      const p = pts[i], a = pts[i - 1], b = pts[i + 1];
+      if (!p.vis || !a.vis || !b.vis) continue;
+      let dx = b.x - a.x, dy = b.y - a.y; const m = Math.hypot(dx, dy) || 1; dx /= m; dy /= m;
+      const L = 3.6 * s.dpr;
+      ctx.moveTo(p.x - dy * L, p.y + dx * L); ctx.lineTo(p.x + dy * L, p.y - dx * L);
+    }
+    ctx.stroke();
+    // rail
+    ctx.strokeStyle = strong ? C.caramel : C.foret;
+    ctx.lineWidth = (strong ? 1.8 : 1.4) * s.dpr;
+    ctx.beginPath(); let pen = false;
+    pts.forEach(p => { if (p.vis) { pen ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); pen = true; } else pen = false; });
+    ctx.stroke();
+    // petit train
+    const g = pts[Math.min(N, Math.floor(phase * N))];
+    if (g && g.vis) { dot(g.x, g.y, 3.4, strong ? C.caramel : C.foret, C.creme); }
+  }
+
+  function dot(x, y, r, fill, ring) {
+    const ctx = s.ctx; ctx.beginPath(); ctx.arc(x, y, r * s.dpr, 0, Math.PI * 2);
+    ctx.fillStyle = fill; ctx.fill();
+    if (ring) { ctx.lineWidth = 2 * s.dpr; ctx.strokeStyle = ring; ctx.stroke(); }
+  }
+  function station(x, y, r, full) {
+    const ctx = s.ctx; ctx.beginPath(); ctx.arc(x, y, r * s.dpr, 0, Math.PI * 2);
+    ctx.fillStyle = full ? C.caramel : C.creme; ctx.fill();
+    ctx.lineWidth = 2 * s.dpr; ctx.strokeStyle = full ? C.creme : C.foret; ctx.stroke();
+  }
+  function pulse(x, y, now) {
+    if (REDUCED_MOTION) return;
+    const t = ((now - s.t0) / 1800) % 1, ctx = s.ctx;
+    ctx.beginPath(); ctx.arc(x, y, (7 + t * 16) * s.dpr, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(139,90,43,${0.6 * (1 - t)})`; ctx.lineWidth = 1.5 * s.dpr; ctx.stroke();
+  }
+  function label(x, y, text, strong, below) {
+    const ctx = s.ctx;
+    ctx.font = `${Math.round((strong ? 13 : 12) * s.dpr)}px "Tenor Sans", Optima, sans-serif`;
+    ctx.textBaseline = 'middle';
+    const w = ctx.measureText(text.toUpperCase()).width;
+    let tx = x + 10 * s.dpr, ty = below ? y + 13 * s.dpr : y - 2 * s.dpr;
+    if (tx + w > s.size - 4) tx = x - 10 * s.dpr - w;
+    ctx.lineJoin = 'round'; ctx.lineWidth = 4 * s.dpr; ctx.strokeStyle = 'rgba(244,242,234,0.92)';
+    ctx.strokeText(text.toUpperCase(), tx, ty);
+    ctx.fillStyle = strong ? C.encre : '#55574B';
+    ctx.fillText(text.toUpperCase(), tx, ty);
+  }
+
+  // ---- Mouvement ----
+  function flyTo(lat, lng, k) {
+    s.target = { lat, lng, k, fromLat: s.lat, fromLon: s.lon, fromK: s.k, t: 0 };
+    s.vLon = s.vLat = 0; s.lastInteract = performance.now();
+    if (REDUCED_MOTION || !s.ready) { s.lat = lat; s.lon = lng; s.k = k; s.target = null; }
+    if (s.resetBtn) s.resetBtn.hidden = !(k > 2);
+  }
+  const clampLat = v => Math.max(-70, Math.min(70, v));
+  function step(now, dt) {
+    if (s.target) {
+      const g = s.target; g.t = Math.min(1, g.t + dt / 1.5);
+      const e = g.t < 0.5 ? 4 * g.t ** 3 : 1 - (-2 * g.t + 2) ** 3 / 2;
+      const dLon = ((g.lng - g.fromLon + 540) % 360) - 180;
+      s.lon = g.fromLon + dLon * e; s.lat = g.fromLat + (g.lat - g.fromLat) * e; s.k = g.fromK + (g.k - g.fromK) * e;
+      if (g.t >= 1) s.target = null;
+    } else if (!s.dragging) {
+      s.lon -= s.vLon; s.lat = clampLat(s.lat - s.vLat); s.vLon *= 0.92; s.vLat *= 0.92;
+    }
+    s.lon = ((s.lon + 540) % 360) - 180;
+  }
+
+  // ---- Interactions ----
+  function pt(e) { const r = s.canvas.getBoundingClientRect(); return { x: (e.clientX - r.left) * s.dpr, y: (e.clientY - r.top) * s.dpr }; }
+  function hitTest(p) {
+    let best = null, bd = Infinity;
+    s.hits.forEach(h => { const d = Math.hypot(h.x - p.x, h.y - p.y); if (d < h.r && d < bd) { bd = d; best = h; } });
+    return best;
+  }
+  function inEcuador(p) { const g = unproject(p.x, p.y); return !!g && s.ecuadorRings.some(r => pointInRing(g.lng, g.lat, r)); }
+
+  function onDown(e) {
+    if (e.button !== undefined && e.button !== 0) return;
+    s.dragging = true; s.moved = 0; s.last = pt(e); s.target = null; s.vLon = s.vLat = 0;
+    s.canvas.classList.add('dragging');
+    try { s.canvas.setPointerCapture(e.pointerId); } catch (_) { /* ignore */ }
+  }
+  function onMove(e) {
+    const p = pt(e);
+    if (s.dragging && s.last) {
+      const dx = p.x - s.last.x, dy = p.y - s.last.y; s.moved += Math.abs(dx) + Math.abs(dy);
+      const f = 180 / (Math.PI * radius());
+      s.vLon = dx * f; s.vLat = -dy * f;
+      s.lon -= s.vLon; s.lat = clampLat(s.lat - s.vLat); s.last = p;
+      return;
+    }
+    s.hover = hitTest(p);
+    s.canvas.classList.toggle('pointing', !!s.hover || (s.k < 2.4 && inEcuador(p)));
+  }
+  function onUp(e) {
+    if (!s.dragging) return;
+    s.dragging = false; s.canvas.classList.remove('dragging');
+    try { s.canvas.releasePointerCapture(e.pointerId); } catch (_) { /* ignore */ }
+    if (s.moved > 8 * s.dpr) return;           // c'était un glissé
+    s.vLon = s.vLat = 0;
+    const p = pt(e), h = hitTest(p);
+    if (h && h.kind === 'poi') MapTab.selectPoi(h.id);
+    else if (h && h.kind === 'chapter') MapTab.select({ kind: 'chapter', id: h.id }, true);
+    else if (s.k < 2.4 && inEcuador(p)) MapTab.selectEcuador();
+  }
+
+  function loop(now) {
+    const dt = Math.min(0.05, (now - (loop.last || now)) / 1000); loop.last = now;
+    if (s.visible && !s.el.closest('[hidden]')) { step(now, dt); draw(now); }
+    requestAnimationFrame(loop);
+  }
+
+  function init() {
+    s.el = $('#globe');
+    if (!s.el || typeof WORLD_GEO === 'undefined') return;
+    s.canvas = document.createElement('canvas'); s.ctx = s.canvas.getContext('2d');
+    s.el.appendChild(s.canvas);
+    prep();
+    s.canvas.addEventListener('pointerdown', onDown);
+    s.canvas.addEventListener('pointermove', onMove);
+    s.canvas.addEventListener('pointerup', onUp);
+    s.canvas.addEventListener('pointercancel', () => { s.dragging = false; s.canvas.classList.remove('dragging'); });
+    s.canvas.addEventListener('pointerleave', () => { s.hover = null; });
+    window.addEventListener('resize', resize);
+
+    s.resetBtn = document.createElement('button');
+    s.resetBtn.type = 'button'; s.resetBtn.className = 'btn btn-quiet globe-reset'; s.resetBtn.hidden = true;
+    s.resetBtn.textContent = tr('overview');
+    s.resetBtn.addEventListener('click', () => MapTab.select({ kind: 'chapter', id: 'pierre' }, true));
+    s.el.appendChild(s.resetBtn);
+
+    if ('IntersectionObserver' in window) new IntersectionObserver(en => { s.visible = en[0].isIntersecting; }, { rootMargin: '200px' }).observe(s.el);
+    const loader = $('#globeLoader'); if (loader) loader.classList.add('hidden');
+    s.ready = true;
+    requestAnimationFrame(loop);
+  }
+
+  return {
+    init, flyTo,
+    activate() { resize(); },
+    setFromCity(c) { s.from = c; },
+    relabel() { if (s.resetBtn) s.resetBtn.textContent = tr('overview'); }
+  };
+})();
+
+/* ---------- 8. Carte de l'Équateur ---------- */
+const Explorer = (function () {
+  let map = null, markers = {}, routeLine = null;
+  let filter = 'all', route = null, active = null;
+
+  const visibleIds = () => route ? byId(ITINERARIES, route).stops : POIS.filter(p => filter === 'all' || p.cat === filter).map(p => p.id);
+  const esc = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const icon = (p, on) => L.divIcon({ className: 'poi-marker' + (on ? ' active' : ''), html: `<span style="background:${CAT_COLOR[p.cat]}"></span>`, iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -12] });
+  const popupHtml = p => `<span class="popup-name">${esc(loc(p).name)}</span><span class="popup-meta">${esc(loc(p).meta)}</span>`;
+
+  function initMap() {
+    if (map) return;
+    const box = $('#ecuadorMap');
+    if (!box || box.closest('[hidden]')) return;          // attendre que l'onglet soit visible
+    if (typeof L === 'undefined') { $('#mapFallback').hidden = false; return; }
+    map = L.map(box, { scrollWheelZoom: false });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd', maxZoom: 18
+    }).addTo(map);
+    map.on('focus', () => map.scrollWheelZoom.enable());
+    map.on('blur', () => map.scrollWheelZoom.disable());
+    POIS.forEach(p => {
+      const m = L.marker([p.lat, p.lng], { icon: icon(p, p.id === active), title: loc(p).name, riseOnHover: true });
+      m.bindPopup(popupHtml(p), { autoPanPadding: [30, 30] });
+      m.on('click', () => select(p.id, { fly: false, scrollList: true }));
+      markers[p.id] = m;
+    });
+    applyVisibility(true);
+  }
+
+  function fit(ids) {
+    if (!map) return;
+    const pts = ids.map(id => byId(POIS, id)).map(p => [p.lat, p.lng]);
+    if (pts.length === 1) map.setView(pts[0], 9);
+    else if (pts.length) map.fitBounds(pts, { padding: [40, 40], maxZoom: 9 });
+  }
+
+  function applyVisibility(refit) {
+    const ids = visibleIds();
+    $$('.poi-item').forEach(li => { li.hidden = !ids.includes(li.dataset.id); });
+    if (!map) return;
+    Object.entries(markers).forEach(([id, m]) => {
+      if (ids.includes(id)) { if (!map.hasLayer(m)) m.addTo(map); } else if (map.hasLayer(m)) map.removeLayer(m);
+    });
+    if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
+    if (route) {
+      const pts = byId(ITINERARIES, route).stops.map(id => byId(POIS, id)).map(p => [p.lat, p.lng]);
+      routeLine = L.polyline(pts, { color: C.caramel, weight: 2.5, dashArray: '2 7', lineCap: 'round', opacity: 0.95 }).addTo(map);
+    }
+    if (refit) fit(ids);
+  }
+
+  function render() {
+    const fbox = $('#filters');
+    if (fbox) {
+      fbox.innerHTML = '';
+      const mk = (id, label, color) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'filter-btn';
+        b.setAttribute('aria-pressed', String(!route && filter === id));
+        if (color) { const d = document.createElement('span'); d.className = 'filter-dot'; d.style.background = color; b.appendChild(d); }
+        b.appendChild(document.createTextNode(label));
+        b.addEventListener('click', () => { filter = id; route = null; render(); applyVisibility(true); });
+        fbox.appendChild(b);
+      };
+      mk('all', tr('all'), null);
+      CATEGORIES.forEach(c => mk(c.id, tr('cat_' + c.id), c.color));
+    }
+
+    const list = $('#poiList');
+    if (list) {
+      list.innerHTML = '';
+      const order = route ? byId(ITINERARIES, route).stops.map(id => byId(POIS, id)) : POIS;
+      order.concat(route ? POIS.filter(p => !order.includes(p)) : []).forEach(p => {
+        const d = loc(p);
+        const li = document.createElement('li');
+        li.className = 'poi-item' + (active === p.id ? ' active' : ''); li.dataset.id = p.id;
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'poi-btn'; b.setAttribute('aria-expanded', String(active === p.id));
+        b.innerHTML = '<span class="filter-dot"></span><span><span class="poi-name"></span><span class="poi-meta"></span><span class="poi-desc"></span></span>';
+        b.querySelector('.filter-dot').style.background = CAT_COLOR[p.cat];
+        b.querySelector('.poi-name').textContent = d.name;
+        b.querySelector('.poi-meta').textContent = d.meta;
+        b.querySelector('.poi-desc').textContent = d.desc;
+        b.addEventListener('click', () => select(p.id, { fly: true, scrollList: false }));
+        li.appendChild(b); list.appendChild(li);
+      });
+    }
+
+    const rbox = $('#routeGrid');
+    if (rbox) {
+      rbox.innerHTML = '';
+      ITINERARIES.forEach(it => {
+        const d = loc(it), b = document.createElement('button');
+        b.type = 'button'; b.className = 'route-btn'; b.setAttribute('aria-pressed', String(route === it.id));
+        b.innerHTML = '<span class="route-days"></span><span class="route-title"></span><span class="route-steps"></span>';
+        b.querySelector('.route-days').textContent = d.days;
+        b.querySelector('.route-title').textContent = d.title;
+        b.querySelector('.route-steps').textContent = it.stops.map(id => loc(byId(POIS, id)).name.split(',')[0]).join(', ');
+        b.addEventListener('click', () => {
+          route = route === it.id ? null : it.id; if (!route) filter = 'all';
+          render(); applyVisibility(true);
+          if (route) { const w = $('.map-wrap'); const r = w.getBoundingClientRect(); if (r.top < 0 || r.bottom > innerHeight) w.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'center' }); }
+        });
+        rbox.appendChild(b);
+      });
+    }
+
+    if (map) {
+      Object.entries(markers).forEach(([id, m]) => { const p = byId(POIS, id); m.setPopupContent(popupHtml(p)); m.setIcon(icon(p, id === active)); });
+      applyVisibility(false);
+    } else {
+      const ids = visibleIds(); $$('.poi-item').forEach(li => { li.hidden = !ids.includes(li.dataset.id); });
+    }
+  }
+
+  function select(id, opts) {
+    const p = byId(POIS, id); if (!p) return;
+    if (!visibleIds().includes(id)) { filter = 'all'; route = null; render(); applyVisibility(false); }
+    const prev = active; active = id;
+    $$('.poi-item').forEach(li => {
+      const on = li.dataset.id === id; li.classList.toggle('active', on);
+      const b = li.querySelector('.poi-btn'); if (b) b.setAttribute('aria-expanded', String(on));
+    });
+    if (opts.scrollList) {
+      const li = $(`.poi-item[data-id="${id}"]`), list = $('#poiList');
+      if (li && list && list.scrollHeight > list.clientHeight) list.scrollTo({ top: li.offsetTop - list.offsetTop - 8, behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
+    }
+    initMap();
+    if (map) {
+      if (prev && markers[prev]) markers[prev].setIcon(icon(byId(POIS, prev), false));
+      const m = markers[id]; m.setIcon(icon(p, true));
+      if (opts.fly) map.flyTo([p.lat, p.lng], Math.max(map.getZoom(), p.cat === 'galapagos' ? 9 : 10), { duration: REDUCED_MOTION ? 0 : 0.9 });
+      setTimeout(() => m.openPopup(), opts.fly && !REDUCED_MOTION ? 950 : 0);
+    }
+  }
+
+  return {
+    render, select,
+    activate() {
+      initMap();
+      if (map) setTimeout(() => { map.invalidateSize(); if (!active && !route) fit(visibleIds()); }, 60);
+    }
+  };
+})();
+
+/* ---------- 9. RSVP : le billet ---------- */
+let lastStatus = null;
+function setStatus(kind) {
+  lastStatus = kind;
+  const el = $('#rsvpStatus'); if (!el) return;
+  el.className = 'form-status' + (kind && kind.startsWith('ok') ? ' ok' : (kind === 'err' || kind === 'check') ? ' err' : '');
+  el.textContent = !kind ? '' : kind === 'ok-yes' ? tr('okYes') : kind === 'ok-no' ? tr('okNo') : kind === 'err' ? tr('err') : kind === 'check' ? tr('checkFields') : tr('sending');
+}
+
+let lastTicket = null;
+function initRsvp() {
+  const form = $('#rsvpForm'); if (!form) return;
+  const btn = $('#rsvpSubmit');
+  const v = n => ((form.querySelector(`[name="${n}"]:checked`) || form.querySelector(`[name="${n}"]`) || {}).value || '').trim();
+
+  const syncAttend = () => { const yes = v('presence') !== 'Non'; $$('.attend-only', form).forEach(el => { el.hidden = !yes; }); };
+  $$('[name="presence"]', form).forEach(r => r.addEventListener('change', syncAttend));
+  syncAttend();
+
+  const validate = () => {
+    let first = null;
+    ['f-nom', 'f-email'].forEach(id => {
+      const i = document.getElementById(id), ok = i.value.trim() !== '' && i.checkValidity();
+      i.closest('.tf').classList.toggle('invalid', !ok); i.setAttribute('aria-invalid', String(!ok));
+      if (!ok && !first) first = i;
+    });
+    if (first) first.focus();
+    return !first;
+  };
+  $$('#f-nom, #f-email').forEach(i => i.addEventListener('input', () => { if (i.closest('.tf').classList.contains('invalid')) validate(); }));
+  // Toute modification après envoi rouvre le billet
+  form.addEventListener('input', () => {
+    if (form.classList.contains('done')) { form.classList.remove('done'); $('#stamp').classList.remove('on'); $('#ticketDownload').hidden = true; }
+  });
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (form.querySelector('[name="_honey"]').value) { setStatus('ok-yes'); return; }
+    if (!validate()) { setStatus('check'); return; }
+    const yes = v('presence') !== 'Non';
+    const no = 'NP' + String(Math.floor(10000 + Math.random() * 89999));
+    const data = {
+      _subject: `RSVP ${yes ? 'OUI' : 'NON'} : ${v('nom')} (${no})`, _template: 'table', _captcha: 'false',
+      'Billet No.': no, 'Présence': yes ? 'Oui' : 'Non', 'Nom': v('nom'), 'Email': v('email'),
+      'Ville de départ': v('from'),
+      'Nombre de personnes': yes ? v('personnes') : '0', 'Accompagnants': yes ? v('accompagnants') : '',
+      'Régime / allergies': yes ? v('allergies') : '', 'Chanson': yes ? v('chanson') : '',
+      'Adresse postale': v('adresse'), 'Message': v('message'), 'Langue': LANG.toUpperCase()
+    };
+    btn.disabled = true; setStatus('sending');
+    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 15000);
+    try {
+      const res = await fetch(RSVP_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data), signal: ctrl.signal });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || String(json.success) === 'false') throw new Error('send');
+      $('#ticketNo').textContent = no;
+      lastTicket = { no, yes, name: v('nom'), from: v('from'), pax: yes ? v('personnes') : '0' };
+      form.classList.add('done');
+      requestAnimationFrame(() => $('#stamp').classList.add('on'));
+      $('#ticketDownload').hidden = false;
+      setStatus(yes ? 'ok-yes' : 'ok-no');
+    } catch (err) {
+      setStatus('err');
+    } finally {
+      clearTimeout(timer); btn.disabled = false;
+    }
+  });
+
+  $('#ticketDownload').addEventListener('click', downloadTicket);
+}
+
+// Billet composté, dessiné en PNG
+async function downloadTicket() {
+  if (!lastTicket) return;
+  try { await Promise.all(['64px Sacramento', '20px "Tenor Sans"'].map(f => document.fonts.load(f))); } catch (e) { /* polices de secours */ }
+  const W = 1400, H = 560, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d');
+  x.fillStyle = C.lin; x.fillRect(0, 0, W, H);
+  x.fillStyle = C.ivoire;                                   // perforations
+  for (let y = 18; y < H; y += 30) { x.beginPath(); x.arc(0, y, 9, 0, 7); x.arc(W, y, 9, 0, 7); x.fill(); }
+  x.strokeStyle = C.olive; x.lineWidth = 4; x.strokeRect(34, 30, W - 68, H - 60);
+  x.lineWidth = 1.5; x.strokeRect(46, 42, W - 92, H - 84);
+  // locomotive
+  try {
+    const sym = $('#loco');
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 120" width="330" height="180" style="color:${C.foret}">${sym.innerHTML}</svg>`.replace(/currentColor/g, C.foret);
+    const img = new Image();
+    await new Promise((ok, ko) => { img.onload = ok; img.onerror = ko; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); });
+    x.drawImage(img, 85, 120, 310, 170);
+  } catch (e) { /* sans gravure */ }
+  x.strokeStyle = 'rgba(106,117,80,.45)'; x.lineWidth = 1.5;
+  x.beginPath(); x.moveTo(440, 70); x.lineTo(440, H - 70); x.stroke();
+  x.setLineDash([10, 8]); x.beginPath(); x.moveTo(1130, 70); x.lineTo(1130, H - 70); x.stroke(); x.setLineDash([]);
+
+  x.textAlign = 'center'; x.fillStyle = C.olive; x.font = '88px Sacramento, cursive';
+  x.fillText('Nathalya & Pierre', 785, 150);
+  const field = (lbl, val, fx, fy) => {
+    x.textAlign = 'left'; x.fillStyle = C.olive; x.font = '17px "Tenor Sans", sans-serif';
+    x.fillText(lbl.toUpperCase().split('').join(String.fromCharCode(8202)), fx, fy);
+    x.fillStyle = C.encre; x.font = '27px "Tenor Sans", sans-serif'; x.fillText(val, fx, fy + 38);
+  };
+  field(tr('passenger'), lastTicket.name.slice(0, 32), 490, 230);
+  field('Class', lastTicket.yes ? tr('classYes') : tr('classNo'), 860, 230);
+  field('From', (lastTicket.from || '—').slice(0, 22), 490, 340);
+  field('To', 'Il Casale', 860, 340);
+  field('Date', '14 · 08 · 2027', 490, 440);
+  field('Pasajeros', lastTicket.pax, 860, 440);
+  x.textAlign = 'center'; x.fillStyle = C.olive; x.font = '17px "Tenor Sans", sans-serif'; x.fillText('NO.', 1240, 210);
+  x.fillStyle = C.caramel; x.font = '30px "Tenor Sans", sans-serif'; x.fillText(lastTicket.no, 1240, 250);
+  x.fillStyle = C.olive; x.font = '17px "Tenor Sans", sans-serif'; x.fillText('FARE', 1240, 330);
+  x.fillStyle = C.caramel; x.font = '52px Sacramento, cursive'; x.fillText(LANG === 'es' ? 'Un sí' : 'Un oui', 1240, 385);
+  // tampon
+  x.save(); x.translate(250, 430); x.rotate(-0.2);
+  x.strokeStyle = C.caramel; x.globalAlpha = 0.85; x.lineWidth = 5; x.strokeRect(-150, -42, 300, 84); x.lineWidth = 2; x.strokeRect(-141, -33, 282, 66);
+  x.fillStyle = C.caramel; x.font = '34px "Tenor Sans", sans-serif'; x.fillText(tr('stamp').toUpperCase(), 0, 14);
+  x.restore();
+
+  const a = document.createElement('a');
+  a.download = `billet-nathalya-pierre-${lastTicket.no}.png`;
+  a.href = cv.toDataURL('image/png');
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- 10. Démarrage ---------- */
+function start() {
+  LANG = detectLang();
+  initNav();
+  initCountdown();
+  MapTab.init();
+  Globe.init();
+  initRsvp();
+  setLang(LANG);
+  showTab(location.hash);
+}
+
+/* ---------- 11. Fond de carte du monde ---------- */
+// Natural Earth 1:110m (domaine public), simplifié à 0,1° près.
 const WORLD_GEO = [
   {name:"Fiji",polys:[
     [
@@ -1676,517 +2162,7 @@ const WORLD_GEO = [
   ]},
 ];
 
-
-/* 8. Globe Canvas2D auto-suffisant (WORLD_GEO embarqué) */
-
-// État du globe au scope du module — partagé entre initGlobe et les helpers i18n
-const __globeState = {
-  container: null, canvas: null, info: null, tooltip: null,
-  dpr: 1, ctx: null,
-  rotLon: -78, rotLat: -1, autoRot: true, lastInteract: 0,
-  dragging: false, dragStart: null, lastMove: null,
-  hoverId: null, selectedId: null, ecuadorIdx: -1,
-  hint: null
-};
-
-function __escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
-}
-
-function __project(lat, lng) {
-  const latR = lat * Math.PI / 180;
-  const lonR = (lng - __globeState.rotLon) * Math.PI / 180;
-  const x = Math.cos(latR) * Math.sin(lonR);
-  const y = Math.sin(latR);
-  const z = Math.cos(latR) * Math.cos(lonR);
-  if (z <= 0) return null;
-  const latTilt = __globeState.rotLat * Math.PI / 180;
-  const yt = y * Math.cos(latTilt) - z * Math.sin(latTilt);
-  const zt = y * Math.sin(latTilt) + z * Math.cos(latTilt);
-  return { x: x, y: yt, z: zt };
-}
-
-function __draw() {
-  const s = __globeState;
-  if (!s.canvas) return;
-  const ctx = s.ctx;
-  const w = s.canvas.width;
-  const h = s.canvas.height;
-  const R = Math.min(w, h) / 2 - 8 * s.dpr;
-
-  ctx.clearRect(0, 0, w, h);
-
-  // 1. Océan
-  const oceanGrad = ctx.createRadialGradient(w/2, h/2, R * 0.15, w/2, h/2, R);
-  oceanGrad.addColorStop(0, '#dde9f0');
-  oceanGrad.addColorStop(0.55, '#9bb6c7');
-  oceanGrad.addColorStop(1, '#3a5a72');
-  ctx.fillStyle = oceanGrad;
-  ctx.beginPath();
-  ctx.arc(w/2, h/2, R, 0, Math.PI * 2);
-  ctx.fill();
-
-  // 2. Halo
-  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-  ctx.lineWidth = 1.5 * s.dpr;
-  ctx.beginPath();
-  ctx.arc(w/2, h/2, R + 1 * s.dpr, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // 3. Graticule
-  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-  ctx.lineWidth = 0.6 * s.dpr;
-  for (let lat = -75; lat <= 75; lat += 15) {
-    ctx.beginPath();
-    let started = false;
-    for (let lng = -180; lng <= 180; lng += 2) {
-      const p = __project(lat, lng);
-      if (!p) { started = false; continue; }
-      const px = w/2 + p.x * R;
-      const py = h/2 - p.y * R;
-      if (!started) { ctx.moveTo(px, py); started = true; }
-      else ctx.lineTo(px, py);
-    }
-    ctx.stroke();
-  }
-  for (let lng0 = -180; lng0 < 180; lng0 += 30) {
-    ctx.beginPath();
-    let started = false;
-    for (let lat = -90; lat <= 90; lat += 2) {
-      const p = __project(lat, lng0);
-      if (!p) { started = false; continue; }
-      const px = w/2 + p.x * R;
-      const py = h/2 - p.y * R;
-      if (!started) { ctx.moveTo(px, py); started = true; }
-      else ctx.lineTo(px, py);
-    }
-    ctx.stroke();
-  }
-
-  // 3b. Équateur accentué
-  ctx.strokeStyle = 'rgba(232,180,108,0.55)';
-  ctx.lineWidth = 1.1 * s.dpr;
-  ctx.beginPath();
-  let eqStarted = false;
-  for (let lng = -180; lng <= 180; lng += 2) {
-    const p = __project(0, lng);
-    if (!p) { eqStarted = false; continue; }
-    const px = w/2 + p.x * R;
-    const py = h/2 - p.y * R;
-    if (!eqStarted) { ctx.moveTo(px, py); eqStarted = true; }
-    else ctx.lineTo(px, py);
-  }
-  ctx.stroke();
-
-  // 4. Terres
-  for (let ci = 0; ci < WORLD_GEO.length; ci++) {
-    const country = WORLD_GEO[ci];
-    const isEcuador = (ci === s.ecuadorIdx);
-    for (let pi = 0; pi < country.polys.length; pi++) {
-      const poly = country.polys[pi];
-      ctx.beginPath();
-      let anyVisible = false;
-      for (let ri = 0; ri < poly.length; ri++) {
-        const ring = poly[ri];
-        for (let k = 0; k < ring.length; k++) {
-          const [lng, lat] = ring[k];
-          const p = __project(lat, lng);
-          if (p) anyVisible = true;
-          const px = w/2 + (p ? p.x : 0) * R;
-          const py = h/2 - (p ? p.y : 0) * R;
-          if (k === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-      }
-      if (!anyVisible) continue;
-      ctx.fillStyle = isEcuador ? 'rgba(218,165,90,0.95)' : 'rgba(176,148,108,0.85)';
-      ctx.fill();
-      ctx.strokeStyle = isEcuador ? '#a06030' : '#6e563a';
-      ctx.lineWidth = (isEcuador ? 1.2 : 0.6) * s.dpr;
-      ctx.stroke();
-    }
-  }
-
-  // 5. Marqueurs POI
-  const dict = translations[getCurrentLang()] || translations.es;
-  const projected = [];
-  for (let i = 0; i < POIS.length; i++) {
-    const poi = POIS[i];
-    const p = __project(poi.lat, poi.lng);
-    if (!p) continue;
-    projected.push({ poi: poi, p: p });
-  }
-  projected.sort((a, b) => a.p.z - b.p.z);
-  for (let i = 0; i < projected.length; i++) {
-    const { poi, p } = projected[i];
-    const px = w/2 + p.x * R;
-    const py = h/2 - p.y * R;
-    const isSel = (poi.id === s.selectedId);
-    const isHover = (poi.id === s.hoverId);
-    const radius = (isSel || isHover ? 7 : 5) * s.dpr;
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(px, py, radius + 1.5 * s.dpr, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = isSel ? '#c0502a' : (isHover ? '#e08a3a' : '#d99050');
-    ctx.beginPath();
-    ctx.arc(px, py, radius, 0, Math.PI * 2);
-    ctx.fill();
-    if (isHover || isSel) {
-      const key = POI_LANG_KEYS[poi.id];
-      const name = (key && dict[key.name]) || poi.id;
-      ctx.font = (12 * s.dpr) + 'px Inter, system-ui, sans-serif';
-      const txtW = ctx.measureText(name).width;
-      const tx = px + 10 * s.dpr;
-      const ty = py - 10 * s.dpr;
-      ctx.fillStyle = 'rgba(20,30,40,0.85)';
-      ctx.fillRect(tx - 4 * s.dpr, ty - 14 * s.dpr, txtW + 8 * s.dpr, 18 * s.dpr);
-      ctx.fillStyle = '#fff';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(name, tx, ty - 5 * s.dpr);
-    }
-  }
-}
-
-function __showTooltip(poi, x, y) {
-  const s = __globeState;
-  if (!s.tooltip || !s.container) return;
-  const dict = translations[getCurrentLang()] || translations.es;
-  const key = POI_LANG_KEYS[poi.id];
-  const name = (key && dict[key.name]) || poi.id;
-  const desc = (key && dict[key.desc]) || '';
-  s.tooltip.innerHTML = '<strong>' + __escapeHtml(name) + '</strong><br>' + __escapeHtml(desc);
-  s.tooltip.style.display = 'block';
-  const rect = s.container.getBoundingClientRect();
-  const left = Math.min(rect.width - 250, Math.max(0, x + 12));
-  const top = Math.max(0, y - 30);
-  s.tooltip.style.left = left + 'px';
-  s.tooltip.style.top = top + 'px';
-}
-function __hideTooltip() {
-  const s = __globeState;
-  if (s.tooltip) s.tooltip.style.display = 'none';
-}
-
-function renderCityInfo() {
-  const s = __globeState;
-  if (!s.info) return;
-  const dict = translations[getCurrentLang()] || translations.es;
-  const titleEl = s.info.querySelector('h3');
-  const bodyEl = s.info.querySelector('p');
-  if (!titleEl || !bodyEl) return;
-  if (s.selectedId) {
-    const poi = POIS.find(p => p.id === s.selectedId);
-    if (poi) {
-      const key = POI_LANG_KEYS[poi.id];
-      titleEl.textContent = (key && dict[key.name]) || poi.id;
-      bodyEl.textContent = (key && dict[key.desc]) || '';
-      return;
-    }
-  }
-  titleEl.textContent = dict.mapInfoTitle || dict.mapSelectPrompt || '';
-  bodyEl.textContent = dict.mapInfoBody || '';
-}
-
-function renderGlobeTooltip() {
-  const s = __globeState;
-  if (s.hoverId && s.container) {
-    const poi = POIS.find(p => p.id === s.hoverId);
-    if (poi) {
-      const rect = s.container.getBoundingClientRect();
-      __showTooltip(poi, rect.width/2, rect.height/2);
-    }
-  }
-}
-
-function __pointerXY(e) {
-  const rect = __globeState.canvas.getBoundingClientRect();
-  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-}
-
-function initGlobe() {
-  const s = __globeState;
-  const container = document.getElementById('globe-container');
-  const loader = document.getElementById('globeLoader');
-  s.container = container;
-  s.info = document.getElementById('city-info');
-  if (!container) return;
-
-  let t = container.querySelector('.globe-tooltip');
-  if (!t) {
-    t = document.createElement('div');
-    t.className = 'globe-tooltip';
-    t.style.cssText = 'position:absolute;pointer-events:none;z-index:5;background:rgba(20,30,40,0.92);color:#fff;padding:8px 12px;border-radius:8px;font:12px Inter,sans-serif;max-width:240px;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
-    container.appendChild(t);
-  }
-  s.tooltip = t;
-
-  const canvas = document.createElement('canvas');
-  canvas.className = 'globe-canvas';
-  canvas.style.touchAction = 'none';
-  container.appendChild(canvas);
-  s.canvas = canvas;
-  s.ctx = canvas.getContext('2d');
-  s.dpr = Math.max(1, window.devicePixelRatio || 1);
-
-  for (let i = 0; i < WORLD_GEO.length; i++) {
-    if (WORLD_GEO[i].name === 'Ecuador') { s.ecuadorIdx = i; break; }
-  }
-
-  function resize() {
-    const w = container.clientWidth || 460;
-    const h = container.clientHeight || 460;
-    const size = Math.min(w, h) || 460;
-    canvas.style.width = size + 'px';
-    canvas.style.height = size + 'px';
-    canvas.width = Math.round(size * s.dpr);
-    canvas.height = Math.round(size * s.dpr);
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  function onDown(e) {
-    s.dragging = true;
-    canvas.classList.add('is-dragging');
-    const pt = __pointerXY(e);
-    s.dragStart = pt; s.lastMove = pt;
-    s.autoRot = false;
-    s.lastInteract = Date.now();
-    if (loader) loader.classList.add('hidden');
-    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
-    e.preventDefault();
-  }
-  function onMove(e) {
-    const pt = __pointerXY(e);
-    if (s.dragging && s.dragStart && s.lastMove) {
-      const dx = pt.x - s.lastMove.x;
-      const dy = pt.y - s.lastMove.y;
-      s.rotLon += dx * 0.4;
-      s.rotLat = Math.max(-85, Math.min(85, s.rotLat + dy * 0.4));
-      s.lastMove = pt;
-      s.lastInteract = Date.now();
-    }
-    const w = canvas.width, h = canvas.height;
-    const R = Math.min(w, h) / 2 - 8 * s.dpr;
-    let found = null;
-    let minDist = 14 * s.dpr * 14 * s.dpr;
-    for (let i = 0; i < POIS.length; i++) {
-      const poi = POIS[i];
-      const p = __project(poi.lat, poi.lng);
-      if (!p) continue;
-      const px = w/2 + p.x * R;
-      const py = h/2 - p.y * R;
-      const dxh = px - pt.x * s.dpr;
-      const dyh = py - pt.y * s.dpr;
-      const d2 = dxh*dxh + dyh*dyh;
-      if (d2 < minDist) { minDist = d2; found = poi; }
-    }
-    if (found) {
-      s.hoverId = found.id;
-      __showTooltip(found, pt.x, pt.y);
-      canvas.style.cursor = 'pointer';
-    } else {
-      s.hoverId = null;
-      if (!s.dragging) { __hideTooltip(); canvas.style.cursor = 'grab'; }
-    }
-  }
-  function onUp(e) {
-    if (!s.dragging) return;
-    s.dragging = false;
-    canvas.classList.remove('is-dragging');
-    try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
-    const pt = __pointerXY(e);
-    if (s.dragStart) {
-      const moved = Math.hypot(pt.x - s.dragStart.x, pt.y - s.dragStart.y);
-      if (moved < 5 && s.hoverId) {
-        s.selectedId = s.hoverId;
-        renderCityInfo();
-      }
-    }
-    s.lastInteract = Date.now();
-  }
-
-  canvas.addEventListener('pointerdown', onDown);
-  canvas.addEventListener('pointermove', onMove);
-  canvas.addEventListener('pointerup', onUp);
-  canvas.addEventListener('pointercancel', onUp);
-  canvas.addEventListener('pointerleave', () => { s.hoverId = null; __hideTooltip(); });
-
-  let lastTs = performance.now();
-  function loop(ts) {
-    const dt = Math.min(0.05, (ts - lastTs) / 1000);
-    lastTs = ts;
-    if (!s.dragging && Date.now() - s.lastInteract > 2500) s.autoRot = true;
-    if (s.autoRot && !s.dragging) {
-      s.rotLon += dt * 8;
-      if (s.rotLon > 180) s.rotLon -= 360;
-      if (s.rotLon < -180) s.rotLon += 360;
-    }
-    __draw();
-    requestAnimationFrame(loop);
-  }
-  requestAnimationFrame(loop);
-
-  const hint = document.createElement('div');
-  hint.className = 'globe-hint';
-  hint.textContent = (translations[getCurrentLang()] || translations.es).mapHint || '';
-  container.appendChild(hint);
-  s.hint = hint;
-
-  if (loader) setTimeout(() => loader.classList.add('hidden'), 100);
-
-  window.addEventListener('wedding-lang-changed', () => {
-    if (s.hint) s.hint.textContent = (translations[getCurrentLang()] || translations.es).mapHint || '';
-  });
-}
-
-/* 9. RSVP — FormSubmit + honeypot */
-const RSVP_EMAIL = 'pierre3604@gmail.com';
-
-function bindRsvpForm() {
-  const form = document.getElementById('rsvpForm');
-  if (!form) return;
-
-  // Crée un paragraphe d'erreur et de note s'ils n'existent pas
-  let errEl = document.getElementById('rsvpError');
-  if (!errEl) {
-    errEl = document.createElement('p');
-    errEl.id = 'rsvpError';
-    errEl.className = 'rsvp-error';
-    errEl.setAttribute('role', 'alert');
-    form.appendChild(errEl);
-  }
-  let noteEl = document.getElementById('rsvpNote');
-  if (!noteEl) {
-    noteEl = document.createElement('p');
-    noteEl.id = 'rsvpNote';
-    noteEl.className = 'rsvp-note';
-    form.appendChild(noteEl);
-  }
-
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const dict = translations[getCurrentLang()] || translations.es;
-    const btn = form.querySelector('button[type="submit"]');
-    const successEl = document.getElementById('rsvpSuccess');
-
-    errEl.classList.remove('visible');
-    if (successEl) successEl.classList.remove('visible');
-    errEl.textContent = '';
-
-    // Honeypot : si rempli, prétendre succès silencieusement
-    const honey = (form.querySelector('[name="_honey"]') || {}).value || '';
-    if (honey.trim() !== '') {
-      form.reset();
-      if (successEl) {
-        successEl.textContent = dict.rsvpSuccess || '';
-        successEl.classList.add('visible');
-      }
-      return;
-    }
-
-    // Vérifs natives (required) déjà passées si on est ici
-    const data = {
-      name: (form.querySelector('[name="nom"]') || {}).value || '',
-      email: (form.querySelector('[name="email"]') || {}).value || '',
-      attendance: 'Oui',
-      guests: (form.querySelector('[name="personnes"]') || {}).value || '1',
-      message: [
-        'Allergies: ' + ((form.querySelector('[name="allergies"]') || {}).value || ''),
-        'Adresse: ' + ((form.querySelector('[name="adresse"]') || {}).value || '')
-      ].join('\n'),
-      _subject: 'RSVP — ' + ((form.querySelector('[name="nom"]') || {}).value || ''),
-      _captcha: 'false',
-      _template: 'table'
-    };
-
-    if (btn) {
-      btn.disabled = true;
-      btn.dataset.originalLabel = btn.dataset.originalLabel || btn.textContent;
-      btn.textContent = dict.rsvpSending || btn.textContent;
-    }
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 12000);
-
-    try {
-      const res = await fetch('https://formsubmit.co/ajax/' + RSVP_EMAIL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(data),
-        signal: controller.signal
-      });
-      clearTimeout(timeout);
-      if (res.ok) {
-        form.reset();
-        if (successEl) {
-          successEl.textContent = dict.rsvpSuccess || '';
-          successEl.classList.add('visible');
-        }
-      } else {
-        errEl.textContent = dict.rsvpError || '';
-        errEl.classList.add('visible');
-      }
-    } catch (err) {
-      errEl.textContent = dict.rsvpError || '';
-      errEl.classList.add('visible');
-    } finally {
-      clearTimeout(timeout);
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = btn.dataset.originalLabel || dict.rsvpSubmit || btn.textContent;
-      }
-    }
-  });
-
-  // Initialise le texte d'erreur / note selon la langue
-  const dict0 = translations[getCurrentLang()] || translations.es;
-  errEl.textContent = dict0.rsvpError || '';
-  noteEl.textContent = dict0.rsvpNote || '';
-}
-
-
-
-  // -------------------- 10. Affichage du globe --------------------
-  function toggleMapOnHome() {
-    const home = document.getElementById('home');
-    const map = document.getElementById('map-journey');
-    if (!home || !map) return;
-    if (home.classList.contains('active')) {
-      map.style.display = 'block';
-    } else {
-      map.style.display = 'none';
-    }
-  }
-
-  // -------------------- Initialisation globale --------------------
-  document.addEventListener('DOMContentLoaded', () => {
-    // i18n : charge la langue sauvegardée ou détecte via <html lang>
-    const stored = (() => {
-      try { return localStorage.getItem('wedding-lang'); } catch (e) { return null; }
-    })();
-    let initLang = stored;
-    if (!initLang) {
-      const navLang = (navigator.language || 'es').toLowerCase();
-      initLang = navLang.startsWith('fr') ? 'fr' : 'es';
-    }
-    applyI18n(initLang);
-
-    revealOnScroll();
-    highlightTimelineOnScroll();
-
-    startCountdown();
-    toggleMapOnHome();
-    bindRsvpForm();
-    initGlobe();
-  });
-
-  // Expose fonctions appelées par onclick="" dans index.html
-  window.showTab = showTab;
-  window.setLang = setLang;
-  window.openCountryModal = openCountryModal;
-  window.closeCountryModal = closeCountryModal;
+// Lancement (après la définition des données ci-dessus)
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+else start();
 })();

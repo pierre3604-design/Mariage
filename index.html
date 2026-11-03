@@ -1,385 +1,570 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Nathalya & Pierre — 14 août 2027</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Nathalya &amp; Pierre se marient le 14 août 2027. Retrouvez notre histoire, les infos pratiques et confirmez votre présence.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nathalya &amp; Pierre — 14.08.2027</title>
+  <meta name="description" content="Nathalya &amp; Pierre se marient le 14 août 2027 en Équateur. Notre route, le mariage, le voyage et la confirmation de présence.">
+  <meta name="theme-color" content="#6A7550">
 
-    <!-- Open Graph : belle prévisualisation quand le lien est partagé -->
-    <meta property="og:title" content="Nathalya & Pierre se marient !">
-    <meta property="og:description" content="Rendez-vous le 14 août 2027 pour célébrer notre mariage.">
-    <meta property="og:image" content="images/algarve-2025.jpeg">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:title" content="Nathalya &amp; Pierre — La ruta que nos trajo hasta aquí">
+  <meta property="og:description" content="14.08.2027, Équateur. Réservez votre place.">
+  <meta property="og:image" content="images/algarve-2025.jpeg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
 
-    <!-- Favicon (coeur simple en SVG) -->
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='24' font-size='24'%3E%F0%9F%A4%8D%3C/text%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='24' font-size='24'%3E%F0%9F%A4%8D%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%236A7550'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Georgia,serif' font-size='24' font-style='italic' fill='%23F1F0E0'%3EN%26amp;P%3C/text%3E%3C/svg%3E">
 
-    <!-- Polices -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <!-- Leaflet (carte détaillée d'un pays) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-    <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sacramento&family=Tenor+Sans&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-    <h1>Nathalya & Pierre</h1>
+<!-- Gravure de locomotive, réutilisée sur les billets -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="loco" viewBox="0 0 220 120">
+    <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <!-- fumée -->
+      <path d="M58 30c-6-8 2-16 10-12 2-9 15-9 17 0 8-4 16 4 10 11" />
+      <path d="M70 14c3-7 13-7 16 0" opacity=".6"/>
+      <!-- cheminée -->
+      <path d="M62 34h14l-2 8h-10z"/><path d="M65 42v12M73 42v12"/>
+      <!-- chaudière -->
+      <rect x="40" y="54" width="92" height="30" rx="14"/>
+      <path d="M52 56v26M64 56v26M76 56v26M88 56v26M100 56v26M112 56v26" opacity=".45"/>
+      <path d="M90 54c0-6 4-10 8-10s8 4 8 10"/>
+      <!-- cabine -->
+      <path d="M132 40h44v44h-44z"/><path d="M128 40h52"/><rect x="142" y="48" width="12" height="14"/><rect x="160" y="48" width="10" height="14"/>
+      <!-- chasse-pierres -->
+      <path d="M40 84l-14 12h22M26 96l8-12"/>
+      <path d="M36 70h-6"/><circle cx="34" cy="62" r="4"/>
+      <!-- châssis -->
+      <path d="M40 88h140"/>
+      <!-- roues -->
+      <circle cx="62" cy="98" r="10"/><circle cx="62" cy="98" r="2"/>
+      <circle cx="98" cy="96" r="14"/><circle cx="98" cy="96" r="2"/>
+      <circle cx="134" cy="96" r="14"/><circle cx="134" cy="96" r="2"/>
+      <circle cx="166" cy="100" r="8"/><circle cx="166" cy="100" r="2"/>
+      <path d="M98 82v28M84 96h28M134 82v28M120 96h28" opacity=".5"/>
+      <path d="M98 100l36 0" stroke-width="2.2"/>
+      <!-- rail -->
+      <path d="M10 112h200"/><path d="M20 112v4M40 112v4M60 112v4M80 112v4M100 112v4M120 112v4M140 112v4M160 112v4M180 112v4M200 112v4" opacity=".6"/>
+    </g>
+  </symbol>
+</svg>
 
-    <nav>
-        <a href="#" class="nav-link active" data-tab="home" onclick="showTab('home'); return false;"
-           data-fr="Accueil"
-           data-es="Inicio">Accueil</a>
+<a class="skip-link" href="#main" data-fr="Aller au contenu" data-es="Ir al contenido">Aller au contenu</a>
 
-        <a href="#" class="nav-link" data-tab="story" onclick="showTab('story'); return false;"
-           data-fr="Notre histoire"
-           data-es="Nuestra historia">Notre histoire</a>
+<!-- ============ EN-TÊTE : la ligne de train ============ -->
+<header class="site-header" id="siteHeader">
+  <a href="#inicio" class="monogram" aria-label="Nathalya &amp; Pierre, accueil">N &amp; P</a>
 
-        <a href="#" class="nav-link" data-tab="dates" onclick="showTab('dates'); return false;"
-           data-fr="Les dates"
-           data-es="Fechas importantes">Les dates</a>
+  <nav class="line-nav" id="lineNav" aria-label="Navigation">
+    <ol class="line">
+      <li><a href="#inicio"><span class="stop"></span><span data-fr="Départ" data-es="Salida">Départ</span></a></li>
+      <li><a href="#ruta"><span class="stop"></span><span data-fr="Notre route" data-es="La ruta">Notre route</span></a></li>
+      <li><a href="#boda"><span class="stop"></span><span data-fr="Le mariage" data-es="La boda">Le mariage</span></a></li>
+      <li><a href="#rsvp"><span class="stop"></span><span>RSVP</span></a></li>
+      <li><a href="#mapa"><span class="stop"></span><span data-fr="La carte" data-es="El mapa">La carte</span></a></li>
+      <li><a href="#viaje"><span class="stop"></span><span data-fr="Voyage" data-es="Viaje">Voyage</span></a></li>
+      <li><a href="#faq"><span class="stop"></span><span>FAQ</span></a></li>
+    </ol>
+  </nav>
 
-        <a href="#" class="nav-link" data-tab="infos" onclick="showTab('infos'); return false;"
-           data-fr="Infos pratiques"
-           data-es="Información práctica">Infos pratiques</a>
+  <div class="lang-switch" role="group" aria-label="Langue / Idioma">
+    <button type="button" class="lang-btn" data-lang="fr" aria-pressed="true">FR</button>
+    <button type="button" class="lang-btn" data-lang="es" aria-pressed="false">ES</button>
+  </div>
 
-        <a href="#" class="nav-link" data-tab="rsvp" onclick="showTab('rsvp'); return false;"
-           data-fr="RSVP"
-           data-es="RSVP">RSVP</a>
-    </nav>
-
-    <div class="lang-switch">
-        <button type="button" class="lang-btn active" data-lang="fr" onclick="setLang('fr')">FR</button>
-        <button type="button" class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
-    </div>
+  <button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="lineNav">
+    <span class="bar"></span><span class="bar"></span>
+    <span class="sr-only" data-fr="Menu" data-es="Menú">Menu</span>
+  </button>
 </header>
 
-<!-- 🟣 HERO BANDE DÉFILANTE PLEIN ÉCRAN -->
-<section id="home" class="hero active">
-    <div class="hero-band"></div>
+<main id="main">
 
-    <div class="hero-overlay">
-        <h2 data-fr="Nous nous marions !"
-            data-es="¡Nos casamos!">
-            Nous nous marions !
-        </h2>
-
-        <p class="hero-date"
-           data-fr="14 août 2027"
-           data-es="14 agosto 2027">
-           14 août 2027
-        </p>
-
-        <!-- Compte à rebours -->
-        <div class="countdown" id="countdown" aria-live="polite">
-            <div class="countdown-item">
-                <span class="countdown-number" id="cd-days">0</span>
-                <span class="countdown-label" data-fr="jours" data-es="días">jours</span>
-            </div>
-            <div class="countdown-item">
-                <span class="countdown-number" id="cd-hours">0</span>
-                <span class="countdown-label" data-fr="heures" data-es="horas">heures</span>
-            </div>
-            <div class="countdown-item">
-                <span class="countdown-number" id="cd-minutes">0</span>
-                <span class="countdown-label" data-fr="min" data-es="min">min</span>
-            </div>
-            <div class="countdown-item">
-                <span class="countdown-number" id="cd-seconds">0</span>
-                <span class="countdown-label" data-fr="sec" data-es="seg">sec</span>
-            </div>
+<!-- ============ 1. DÉPART ============ -->
+<section class="tab tab-home" id="inicio" data-tab="inicio">
+  <div class="home">
+    <article class="ticket" aria-label="Billet : Nathalya et Pierre, 14 août 2027, de l'Europe à l'Équateur">
+      <div class="ticket-inner">
+        <div class="ticket-art"><svg class="loco"><use href="#loco"/></svg></div>
+        <div class="ticket-main">
+          <p class="ticket-names">Nathalya &amp; Pierre</p>
+          <dl class="ticket-fields">
+            <div><dt>Class</dt><dd data-fr="Première, avec amour" data-es="Primera, con amor">Première, avec amour</dd></div>
+            <div><dt>Date</dt><dd>14 · 08 · 2027</dd></div>
+            <div><dt>From</dt><dd data-fr="Europe" data-es="Europa">Europe</dd></div>
+            <div><dt>To</dt><dd data-fr="Équateur" data-es="Ecuador">Équateur</dd></div>
+          </dl>
         </div>
+        <div class="ticket-stub">
+          <span class="stub-lbl">No.</span>
+          <span class="stub-no">140827</span>
+          <span class="stub-lbl">Fare</span>
+          <span class="stub-fare" data-fr="Un oui" data-es="Un sí">Un oui</span>
+        </div>
+      </div>
+    </article>
 
-        <button type="button"
-            class="cta-btn"
-            data-fr="RSVP - Confirmer ma présence"
-            data-es="RSVP - Confirmar asistencia"
-            onclick="showTab('rsvp')">
-            RSVP - Confirmer ma présence
-        </button>
+    <p class="caps-line home-phrase" data-fr="Certaines histoires ne sont pas faites pour s'arrêter avec l'été."
+       data-es="Algunas historias no están hechas para terminar con el verano.">Certaines histoires ne sont pas faites pour s'arrêter avec l'été.</p>
+
+    <div class="board" aria-live="off">
+      <p class="board-title" data-fr="Départ dans" data-es="Salida en">Départ dans</p>
+      <div class="board-row">
+        <div class="board-cell"><span class="flap" id="cd-days">000</span><span class="board-lbl" data-fr="jours" data-es="días">jours</span></div>
+        <div class="board-cell"><span class="flap" id="cd-hours">00</span><span class="board-lbl" data-fr="heures" data-es="horas">heures</span></div>
+        <div class="board-cell"><span class="flap" id="cd-minutes">00</span><span class="board-lbl" data-fr="min" data-es="min">min</span></div>
+        <div class="board-cell"><span class="flap" id="cd-seconds">00</span><span class="board-lbl" data-fr="sec" data-es="seg">sec</span></div>
+      </div>
     </div>
+
+    <div class="home-actions">
+      <a href="#rsvp" class="btn btn-primary" data-fr="Réserver ma place" data-es="Reservar mi asiento">Réserver ma place</a>
+      <a href="#ruta" class="btn btn-quiet" data-fr="Lire notre histoire" data-es="Leer nuestra historia">Lire notre histoire</a>
+    </div>
+  </div>
 </section>
 
-<section id="map-journey" class="reveal">
-    <h2 data-fr="Notre map monde" data-es="Nuestro mapa del mundo">Notre Map Monde</h2>
+<!-- ============ 2. LA RUTA ============ -->
+<section class="tab" id="ruta" data-tab="ruta" hidden>
+  <header class="interlude">
+    <h1 class="script" data-fr="La route qui nous a menés jusqu'ici" data-es="La ruta que nos trajo hasta aquí">La route qui nous a menés jusqu'ici</h1>
+    <p class="caps-line" data-fr="Il y a des voyages qui ont une destination. Et des voyages qui finissent par devenir une vie."
+       data-es="Hay viajes que tienen un destino. Y hay viajes que terminan convirtiéndose en una vida.">Il y a des voyages qui ont une destination. Et des voyages qui finissent par devenir une vie.</p>
+  </header>
 
-    <div class="globe-wrapper">
-        <div id="globe-container">
-            <div class="globe-loader" id="globeLoader">
-                <span class="globe-loader-spinner"></span>
-                <span data-fr="Chargement du globe…" data-es="Cargando el globo…">Chargement du globe…</span>
-            </div>
+  <div class="wrap">
+    <ol class="rail">
+      <li class="station">
+        <div class="station-text">
+          <p class="station-when">2019 · Quito</p>
+          <h2 data-fr="La rencontre" data-es="El encuentro">La rencontre</h2>
+          <p data-fr="Tout commence à Quito. Deux vies, deux pays, une rencontre qui change tout."
+             data-es="Todo empieza en Quito. Dos vidas, dos países, un encuentro que lo cambia todo.">Tout commence à Quito. Deux vies, deux pays, une rencontre qui change tout.</p>
         </div>
+        <figure class="polaroid"><img src="images/quito-2019.jpeg" alt="Nathalya et Pierre à Quito en 2019" loading="lazy"><figcaption>Quito, 2019</figcaption></figure>
+      </li>
+      <li class="station">
+        <div class="station-text">
+          <p class="station-when">2021 · Madrid</p>
+          <h2 data-fr="Madrid, une nouvelle étape" data-es="Madrid, una nueva etapa">Madrid, une nouvelle étape</h2>
+          <p data-fr="Madrid devient notre point de repère, entre rires, balades et projets qui se dessinent."
+             data-es="Madrid se convierte en nuestro punto de referencia, entre risas, paseos y proyectos que van tomando forma.">Madrid devient notre point de repère, entre rires, balades et projets qui se dessinent.</p>
+        </div>
+        <figure class="polaroid"><img src="images/madrid-2021.jpeg" alt="Nathalya et Pierre à la Puerta del Sol, Madrid" loading="lazy"><figcaption>Madrid, 2021</figcaption></figure>
+      </li>
+      <li class="station">
+        <div class="station-text">
+          <p class="station-when" data-fr="2023 · Équateur" data-es="2023 · Ecuador">2023 · Équateur</p>
+          <h2 data-fr="La rencontre des familles" data-es="El encuentro de las familias">La rencontre des familles</h2>
+          <p data-fr="Retour en Équateur, cette fois pour rencontrer la famille de Nathalya."
+             data-es="Vuelta a Ecuador, esta vez para conocer a la familia de Nathalya.">Retour en Équateur, cette fois pour rencontrer la famille de Nathalya.</p>
+        </div>
+        <figure class="polaroid wide"><img src="images/famille-ecuador-2023.jpeg" alt="La famille réunie en Équateur" loading="lazy"><figcaption data-fr="En famille, 2023" data-es="En familia, 2023">En famille, 2023</figcaption></figure>
+      </li>
+      <li class="station">
+        <div class="station-text">
+          <p class="station-when" data-fr="2023 · Séville" data-es="2023 · Sevilla">2023 · Séville</p>
+          <h2 data-fr="Séville, ville de lumière" data-es="Sevilla, ciudad de luz">Séville, ville de lumière</h2>
+          <p data-fr="On pose nos valises en Andalousie. Une nouvelle aventure commence."
+             data-es="Deshacemos las maletas en Andalucía. Comienza una nueva aventura.">On pose nos valises en Andalousie. Une nouvelle aventure commence.</p>
+        </div>
+        <figure class="polaroid"><img src="images/sevilla-2023.jpeg" alt="Au bord du Guadalquivir à Séville" loading="lazy"><figcaption data-fr="Séville, 2023" data-es="Sevilla, 2023">Séville, 2023</figcaption></figure>
+      </li>
+      <li class="station">
+        <div class="station-text">
+          <p class="station-when">2025 · Algarve</p>
+          <h2 data-fr="La demande" data-es="La pedida">La demande</h2>
+          <p data-fr="Au bord de l'océan, la question est posée… et la réponse est oui."
+             data-es="A orillas del océano, se hace la pregunta… y la respuesta es sí.">Au bord de l'océan, la question est posée… et la réponse est oui.</p>
+        </div>
+        <figure class="polaroid"><img src="images/algarve-2025.jpeg" alt="Le jour de la demande en Algarve" loading="lazy"><figcaption data-fr="Le oui, 2025" data-es="El sí, 2025">Le oui, 2025</figcaption></figure>
+      </li>
+      <li class="station station-next">
+        <div class="station-text">
+          <p class="station-when">14 · 08 · 2027</p>
+          <h2 class="script" data-fr="Prochain arrêt : l'Équateur" data-es="Próxima parada: Ecuador">Prochain arrêt : l'Équateur</h2>
+        </div>
+      </li>
+    </ol>
 
-        <div id="city-info" class="city-info">
-            <h3 data-fr="Clique sur une ville" data-es="Haz clic en una ciudad">Clique sur une ville</h3>
-            <p>Montpellier · Madrid · Sevilla · Quito</p>
-        </div>
-    </div>
+    <section class="dogs" aria-labelledby="dogsTitle">
+      <h2 class="script" id="dogsTitle" data-fr="Les aventures de Topito et Toffee" data-es="Las aventuras de Topito y Toffee">Les aventures de Topito et Toffee</h2>
+      <div class="dogs-row">
+        <figure class="polaroid tilt"><img src="images/toffee-topito-2024.gif" alt="Topito et Toffee" loading="lazy"><figcaption data-fr="Topito et Toffee, 2024" data-es="Topito y Toffee, 2024">Topito et Toffee, 2024</figcaption></figure>
+        <p class="dogs-text" data-fr="Depuis 2024, ils font partie de chaque voyage. Ils vous attendent aussi."
+           data-es="Desde 2024 forman parte de cada viaje. También os esperan.">Depuis 2024, ils font partie de chaque voyage. Ils vous attendent aussi.</p>
+      </div>
+    </section>
+  </div>
 </section>
 
+<!-- ============ 3. LA BODA ============ -->
+<section class="tab" id="boda" data-tab="boda" hidden>
+  <header class="interlude">
+    <h1 class="script" data-fr="Le mariage" data-es="La boda">Le mariage</h1>
+    <p class="caps-line" data-fr="Samedi 14 août 2027, en Équateur" data-es="Sábado 14 de agosto de 2027, en Ecuador">Samedi 14 août 2027, en Équateur</p>
+  </header>
 
-<section id="story" class="tab reveal">
-    <h2 data-fr="Notre histoire" data-es="Nuestra historia">Notre histoire</h2>
+  <div class="wrap">
+    <div class="venues">
+      <article class="venue">
+        <p class="venue-kind caps-line" data-fr="La cérémonie" data-es="La ceremonia">La cérémonie</p>
+        <h2 class="placeholder">[Église]</h2>
+        <dl class="venue-facts">
+          <div><dt data-fr="Heure" data-es="Hora">Heure</dt><dd class="placeholder">[Heure]</dd></div>
+          <div><dt data-fr="Adresse" data-es="Dirección">Adresse</dt><dd class="placeholder">[Adresse]</dd></div>
+        </dl>
+        <a class="btn btn-quiet maps-btn" data-maps="" target="_blank" rel="noopener" hidden data-fr="Ouvrir dans Maps" data-es="Abrir en Maps">Ouvrir dans Maps</a>
+      </article>
 
-    <p class="story-intro"
-       data-fr="Quelques moments importants qui ont façonné notre histoire d'amour, entre l'Équateur, l'Espagne, le Portugal… et Toffee-Topito."
-       data-es="Algunos momentos importantes que marcaron nuestra historia de amor, entre Ecuador, España, Portugal… y Toffee-Topito.">
-        Quelques moments importants qui ont façonné notre histoire d'amour, entre l'Équateur, l'Espagne, le Portugal… et Toffee-Topito.
+      <article class="venue venue-casale">
+        <svg class="casale" viewBox="0 0 320 170" role="img" aria-label="Illustration d'Il Casale">
+          <g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M70 150V70l90-34 90 34v80"/><path d="M60 72l100-40 100 40"/>
+            <path d="M92 150v-34a14 14 0 0 1 28 0v34M146 150v-40a14 14 0 0 1 28 0v40M200 150v-34a14 14 0 0 1 28 0v34"/>
+            <path d="M100 96h12v12h-12zM208 96h12v12h-12zM154 68h12v14h-12z"/>
+            <path d="M80 82h10M232 82h10M82 128h6M234 120h8M76 112h8" opacity=".5"/>
+            <path d="M30 150c2-30 4-56 8-80M38 70c-14-2-24 4-28 12M38 70c-6-10-16-14-26-12M38 70c8-10 20-12 28-6M38 70c12 0 20 6 22 14"/>
+            <path d="M290 150c-2-26-4-48-8-70M282 80c-12-4-22 0-28 8M282 80c-4-10-12-16-22-16M282 80c8-8 20-8 26-2M282 80c10 2 18 8 18 16"/>
+            <path d="M10 150h300"/><path d="M100 22l4 4M220 22l-4 4M160 10v6" opacity=".55"/>
+          </g>
+        </svg>
+        <p class="venue-kind caps-line" data-fr="La célébration" data-es="La celebración">La célébration</p>
+        <h2>Il Casale</h2>
+        <dl class="venue-facts">
+          <div><dt data-fr="Heure" data-es="Hora">Heure</dt><dd class="placeholder">[Heure]</dd></div>
+          <div><dt data-fr="Adresse" data-es="Dirección">Adresse</dt><dd class="placeholder">[Adresse]</dd></div>
+        </dl>
+        <a class="btn btn-quiet maps-btn" data-maps="" target="_blank" rel="noopener" hidden data-fr="Ouvrir dans Maps" data-es="Abrir en Maps">Ouvrir dans Maps</a>
+      </article>
+    </div>
+
+    <section class="program" aria-labelledby="progTitle">
+      <h2 class="script" id="progTitle" data-fr="Le programme" data-es="El programa">Le programme</h2>
+      <ol class="program-line">
+        <li><span class="stop"></span><span class="prog-time placeholder">[Heure]</span><span class="prog-what" data-fr="Cérémonie" data-es="Ceremonia">Cérémonie</span></li>
+        <li><span class="stop"></span><span class="prog-time placeholder">[Heure]</span><span class="prog-what" data-fr="Célébration à Il Casale" data-es="Celebración en Il Casale">Célébration à Il Casale</span></li>
+        <li><span class="stop"></span><span class="prog-time">…</span><span class="prog-what script-sm">La última parada</span></li>
+      </ol>
+      <p class="muted center" data-fr="Le programme détaillé arrive bientôt, ici et par email."
+         data-es="El programa detallado llegará pronto, aquí y por correo.">Le programme détaillé arrive bientôt, ici et par email.</p>
+    </section>
+
+    <section class="dresscode" aria-labelledby="dressTitle">
+      <h2 class="script" id="dressTitle">Dress code</h2>
+      <p data-fr="Tenue chic et estivale. Si vous cherchez l'inspiration, voici les couleurs de notre mariage."
+         data-es="Elegante y veraniego. Si buscáis inspiración, estos son los colores de nuestra boda.">Tenue chic et estivale. Si vous cherchez l'inspiration, voici les couleurs de notre mariage.</p>
+      <ul class="swatches">
+        <li><span style="background:#949C6F"></span><span data-fr="Sauge" data-es="Salvia">Sauge</span></li>
+        <li><span style="background:#6A7550"></span><span data-fr="Olive" data-es="Oliva">Olive</span></li>
+        <li><span style="background:#E6DDD3"></span><span data-fr="Lin" data-es="Lino">Lin</span></li>
+        <li><span style="background:#637E84"></span><span data-fr="Bleu cendré" data-es="Azul ceniza">Bleu cendré</span></li>
+        <li><span style="background:#8B5A2B"></span><span>Caramel</span></li>
+      </ul>
+    </section>
+  </div>
+</section>
+
+<!-- ============ 4. RSVP : le billet ============ -->
+<section class="tab" id="rsvp" data-tab="rsvp" hidden>
+  <header class="interlude">
+    <h1 class="script" data-fr="Réservez votre place" data-es="Reserva tu asiento">Réservez votre place</h1>
+    <p class="caps-line">
+      <span data-fr="Réponse souhaitée avant le" data-es="Responde antes del">Réponse souhaitée avant le</span>
+      <span class="placeholder">[Date limite]</span>
     </p>
+  </header>
 
-    <div class="timeline">
+  <div class="wrap">
+    <form class="ticket ticket-form" id="rsvpForm" novalidate>
+      <div class="ticket-inner">
+        <div class="ticket-art"><svg class="loco"><use href="#loco"/></svg>
+          <p class="ticket-names small">Nathalya &amp; Pierre</p>
+          <p class="ticket-date">14 · 08 · 2027</p>
+        </div>
 
-        <!-- 1. Rencontre Quito Ecuador 2019 (gauche) -->
-        <div class="timeline-item left">
-            <div class="timeline-dot"></div>
-            <div class="timeline-content">
-                <span class="timeline-date">2019 · Quito, Ecuador</span>
-                <h3 data-fr="Notre rencontre" data-es="Nuestro encuentro">Notre rencontre</h3>
-                <p data-fr="Tout commence à Quito. Deux vies, deux pays, une rencontre qui change tout."
-                   data-es="Todo empieza en Quito. Dos vidas, dos países, un encuentro que lo cambia todo.">
-                    Tout commence à Quito. Deux vies, deux pays, une rencontre qui change tout.
-                </p>
-                <figure class="timeline-photo">
-                    <img src="images/quito-2019.jpeg" alt="Pierre et Nathalya à Quito en 2019" loading="lazy">
-                    <figcaption>Quito · Nos premiers souvenirs ensemble</figcaption>
-                </figure>
+        <div class="ticket-main form-grid">
+          <div class="tf tf-full">
+            <label for="f-nom"><span class="tf-key">Nombre</span> / <span data-fr="Nom" data-es="Nom">Nom</span></label>
+            <input id="f-nom" name="nom" type="text" autocomplete="name" required>
+            <p class="tf-err" data-fr="Indiquez votre nom et prénom." data-es="Indica tu nombre y apellidos.">Indiquez votre nom et prénom.</p>
+          </div>
+          <div class="tf">
+            <label for="f-email"><span class="tf-key">Email</span></label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required>
+            <p class="tf-err" data-fr="Indiquez un email valide." data-es="Indica un correo válido.">Indiquez un email valide.</p>
+          </div>
+          <div class="tf">
+            <label for="f-from"><span class="tf-key">From</span> <span class="tf-hint" data-fr="(votre ville)" data-es="(tu ciudad)">(votre ville)</span></label>
+            <input id="f-from" name="from" type="text" autocomplete="address-level2">
+          </div>
+          <div class="tf">
+            <span class="tf-label"><span class="tf-key">To</span></span>
+            <p class="tf-fixed">Il Casale</p>
+          </div>
+          <fieldset class="tf tf-full">
+            <legend><span class="tf-key">Class</span></legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="presence" value="Oui" checked><span data-fr="Je viens, avec joie" data-es="Voy, con mucha ilusión">Je viens, avec joie</span></label>
+              <label class="choice"><input type="radio" name="presence" value="Non"><span data-fr="Je ne pourrai pas venir" data-es="No podré ir">Je ne pourrai pas venir</span></label>
             </div>
+          </fieldset>
+          <div class="tf attend-only">
+            <label for="f-pax"><span class="tf-key">Pasajeros</span> <span class="tf-hint" data-fr="(vous compris)" data-es="(contándote)">(vous compris)</span></label>
+            <select id="f-pax" name="personnes"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+          </div>
+          <div class="tf attend-only">
+            <label for="f-accomp"><span data-fr="Prénoms des accompagnants" data-es="Nombres de los acompañantes">Prénoms des accompagnants</span></label>
+            <input id="f-accomp" name="accompagnants" type="text">
+          </div>
+          <div class="tf tf-full attend-only">
+            <label for="f-regime"><span data-fr="Régime alimentaire, allergies" data-es="Dieta, alergias">Régime alimentaire, allergies</span></label>
+            <input id="f-regime" name="allergies" type="text">
+          </div>
+          <div class="tf tf-full attend-only">
+            <label for="f-song"><span data-fr="La chanson qui vous fera danser" data-es="La canción para la hora loca">La chanson qui vous fera danser</span></label>
+            <input id="f-song" name="chanson" type="text">
+          </div>
+          <div class="tf tf-full">
+            <label for="f-adresse"><span data-fr="Adresse postale (pour l'invitation)" data-es="Dirección postal (para la invitación)">Adresse postale (pour l'invitation)</span></label>
+            <input id="f-adresse" name="adresse" type="text" autocomplete="street-address">
+          </div>
+          <div class="tf tf-full">
+            <label for="f-message"><span data-fr="Un mot pour nous" data-es="Unas palabras para nosotros">Un mot pour nous</span></label>
+            <textarea id="f-message" name="message" rows="2"></textarea>
+          </div>
+          <input type="text" name="_honey" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
         </div>
 
-        <!-- 2. Madrid - España 2021 (droite) -->
-        <div class="timeline-item right">
-            <div class="timeline-dot"></div>
-            <div class="timeline-content">
-                <span class="timeline-date">2021 · Madrid, España</span>
-                <h3 data-fr="Madrid, une nouvelle étape" data-es="Madrid, una nueva etapa">Madrid, une nouvelle étape</h3>
-                <p data-fr="Madrid devient un de nos points de repère, entre rires, balades et projets qui se dessinent."
-                   data-es="Madrid se convierte en uno de nuestros puntos de referencia, entre risas, paseos y proyectos que van tomando forma.">
-                    Madrid devient un de nos points de repère, entre rires, balades et projets qui se dessinent.
-                </p>
-                <figure class="timeline-photo">
-                    <img src="images/madrid-2021.jpeg" alt="Moment de couple à Madrid en 2021" loading="lazy">
-                    <figcaption>Madrid · Terrasses, balades et projets à deux</figcaption>
-                </figure>
-            </div>
+        <div class="ticket-stub">
+          <span class="stub-lbl">No.</span>
+          <span class="stub-no" id="ticketNo">——</span>
+          <span class="stub-lbl">Fare</span>
+          <span class="stub-fare" data-fr="Un oui" data-es="Un sí">Un oui</span>
         </div>
 
-        <!-- 3. Ecuador 2023 Rencontre Famille Nathalya Pierre (gauche) -->
-        <div class="timeline-item left">
-            <div class="timeline-dot"></div>
-            <div class="timeline-content">
-                <span class="timeline-date">2023 · Voyage en Équateur</span>
-                <h3 data-fr="Rencontre des familles" data-es="Encuentro de las familias">Rencontre des familles</h3>
-                <p data-fr="La rencontre avec la famille de Nathalya."
-                   data-es="El encuentro con la familia de Nathalya.">
-                    La rencontre avec la famille de Nathalya.
-                </p>
-                <figure class="timeline-photo">
-                    <img src="images/famille-ecuador-2023.jpeg" alt="Rencontre de la famille en Équateur en 2023" loading="lazy">
-                    <figcaption>Équateur · La famille réunie autour de nous</figcaption>
-                </figure>
-            </div>
-        </div>
-
-        <!-- 4. Sevilla España 2023 (droite) -->
-        <div class="timeline-item right">
-            <div class="timeline-dot"></div>
-            <div class="timeline-content">
-                <span class="timeline-date">2023 · Installation à Séville, España</span>
-                <h3 data-fr="Séville, ville de lumière" data-es="Sevilla, ciudad de luz">Séville, ville de lumière</h3>
-                <p data-fr="Séville et l'Andalousie nous voilà ! Une nouvelle aventure commence."
-                   data-es="¡Sevilla y Andalucía, aquí estamos! Comienza una nueva aventura.">
-                    Séville et l'Andalousie nous voilà ! Une nouvelle aventure commence.
-                </p>
-                <figure class="timeline-photo">
-                    <img src="images/sevilla-2023.jpeg" alt="Installation à Séville en 2023" loading="lazy">
-                    <figcaption>Séville · Entre flamenco, soleil et complicité</figcaption>
-                </figure>
-            </div>
-        </div>
-
-        <!-- 5. Adoption Toffee-Topito 2024 (gauche) -->
-        <div class="timeline-item left">
-            <div class="timeline-dot"></div>
-            <div class="timeline-content">
-                <span class="timeline-date">2024</span>
-                <h3 data-fr="Adoption de Toffee-Topito" data-es="Adopción de Toffee-Topito">Adoption de Toffee-Topito</h3>
-                <p data-fr="La famille s'agrandit avec Toffee-Topito."
-                   data-es="La familia crece con Toffee-Topito.">
-                    La famille s'agrandit avec Toffee-Topito.
-                </p>
-                <figure class="timeline-photo">
-                    <img src="images/toffee-topito-2024.gif" alt="Adoption de Toffee-Topito en 2024" loading="lazy">
-                    <figcaption>Toffee-Topito · La famille s'agrandit</figcaption>
-                </figure>
-            </div>
-        </div>
-
-        <!-- 6. 2025 Demande en mariage - Portugal Algarve (droite) -->
-        <div class="timeline-item right">
-            <div class="timeline-dot"></div>
-            <div class="timeline-content">
-                <span class="timeline-date">2025 · Algarve, Portugal</span>
-                <h3 data-fr="La demande en mariage" data-es="La pedida de mano">La demande en mariage</h3>
-                <p data-fr="Au bord de l'océan, en Algarve, la question est posée… et la réponse est oui."
-                   data-es="A orillas del océano, en el Algarve, se hace la pregunta… y la respuesta es sí.">
-                    Au bord de l'océan, en Algarve, la question est posée… et la réponse est oui.
-                </p>
-                <figure class="timeline-photo">
-                    <img src="images/algarve-2025.jpeg" alt="Demande en mariage au Portugal, Algarve, en novembre 2025" loading="lazy">
-                    <figcaption>Algarve · Le "oui" qui change une vie</figcaption>
-                </figure>
-            </div>
-        </div>
-
-        <!-- 7. Le mariage - étape finale (gauche) -->
-        <div class="timeline-item left">
-            <div class="timeline-dot timeline-dot-final"></div>
-            <div class="timeline-content">
-                <span class="timeline-date">14 août 2027</span>
-                <h3 data-fr="Le grand jour" data-es="El gran día">Le grand jour</h3>
-                <p data-fr="Et enfin, nous nous marions. On a hâte de célébrer ça avec vous !"
-                   data-es="Y por fin, nos casamos. ¡Estamos deseando celebrarlo con vosotros!">
-                    Et enfin, nous nous marions. On a hâte de célébrer ça avec vous !
-                </p>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-
-<!-- DATES -->
-<section id="dates" class="tab reveal">
-    <h2 data-fr="La date importante" data-es="Fecha importante">La date importante</h2>
-    <ul>
-        <li data-fr="Cérémonie — 14 août 2027"
-            data-es="Ceremonia — 14 agosto 2027">
-            Cérémonie — 14 août 2027
-        </li>
-    </ul>
-</section>
-
-<!-- INFOS PRATIQUES -->
-<section id="infos" class="tab reveal">
-    <h2 data-fr="Infos pratiques" data-es="Información práctica">Infos pratiques</h2>
-
-    <div class="infos-grid">
-        <div class="infos-card">
-            <h3 data-fr="👗 Dress code" data-es="👗 Código de vestimenta">👗 Dress code</h3>
-            <p data-fr="Tenue chic et estivale. Pensez au sable si la cérémonie a lieu en extérieur !"
-               data-es="Vestimenta elegante y de verano. ¡Pensad en la arena si la ceremonia es al aire libre!">
-                Tenue chic et estivale. Pensez au sable si la cérémonie a lieu en extérieur !
-            </p>
-        </div>
-
-        <div class="infos-card">
-            <h3 data-fr="🚗 Transport" data-es="🚗 Transporte">🚗 Transport</h3>
-            <p data-fr="Détails sur les options de transport à venir. Un covoiturage sera organisé si besoin."
-               data-es="Más información sobre el transporte próximamente. Se organizará un coche compartido si es necesario.">
-                Détails sur les options de transport à venir. Un covoiturage sera organisé si besoin.
-            </p>
-        </div>
-
-        <div class="infos-card">
-            <h3 data-fr="🏨 Hébergement" data-es="🏨 Alojamiento">🏨 Hébergement</h3>
-            <p data-fr="Une liste d'hôtels et logements recommandés sera communiquée prochainement."
-               data-es="Próximamente compartiremos una lista de hoteles y alojamientos recomendados.">
-                Une liste d'hôtels et logements recommandés sera communiquée prochainement.
-            </p>
-        </div>
-
-        <div class="infos-card">
-            <h3 data-fr="🎁 Cadeaux" data-es="🎁 Regalos">🎁 Cadeaux</h3>
-            <p data-fr="Votre présence est le plus beau des cadeaux. Une cagnotte sera toutefois disponible si vous le souhaitez."
-               data-es="Vuestra presencia es el mejor regalo. Aun así, habrá disponible una lista de regalos si lo deseáis.">
-                Votre présence est le plus beau des cadeaux. Une cagnotte sera toutefois disponible si vous le souhaitez.
-            </p>
-        </div>
-    </div>
-</section>
-
-<!-- RSVP -->
-<section id="rsvp" class="tab reveal">
-    <h2 data-fr="Confirmez votre présence" data-es="Confirma tu asistencia">
-        Confirmez votre présence
-    </h2>
-
-    <form class="rsvp-form" id="rsvpForm" action="https://formsubmit.co/ajax/pierre3604@gmail.com" method="POST">
-        <label for="rsvp-nom" data-fr="Nom et prénom" data-es="Nombre y apellido">
-            Nom et prénom
-        </label>
-        <input id="rsvp-nom" type="text" name="nom" placeholder="Votre nom complet" required>
-
-        <label for="rsvp-email" data-fr="Email" data-es="Correo electrónico">
-            Email
-        </label>
-        <input id="rsvp-email" type="email" name="email" placeholder="vous@example.com" required>
-
-        <label for="rsvp-personnes" data-fr="Nombre de personnes" data-es="Número de personas">
-            Nombre de personnes
-        </label>
-        <input id="rsvp-personnes" type="number" name="personnes" min="1" value="1" required>
-
-        <label for="rsvp-allergies" data-fr="Allergies" data-es="Alergias">
-            Allergies
-        </label>
-        <textarea id="rsvp-allergies" name="allergies" rows="3" placeholder="Aucune"></textarea>
-
-        <label for="rsvp-adresse" data-fr="Mon adresse" data-es="Mi dirección">
-            Mon adresse
-        </label>
-        <textarea id="rsvp-adresse" name="adresse" rows="2" placeholder="Votre adresse postale"></textarea>
-
-        <!-- Honeypot anti-spam (hidden from users, bots fill it) -->
-        <input type="text" name="_honey" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true">
-        <button type="submit"
-                data-fr="Envoyer"
-                data-es="Enviar">
-            Envoyer
-        </button>
-
-        <p class="rsvp-success" id="rsvpSuccess" role="status"
-           data-fr="Merci ! Votre réponse a bien été envoyée. 💌"
-           data-es="¡Gracias! Tu respuesta se ha enviado correctamente. 💌">
-        </p>
+        <div class="stamp" id="stamp" aria-hidden="true"><span data-fr="Confirmé" data-es="Confirmado">Confirmé</span></div>
+      </div>
     </form>
+
+    <div class="rsvp-actions">
+      <button type="submit" form="rsvpForm" class="btn btn-primary" id="rsvpSubmit" data-fr="Composter mon billet" data-es="Validar mi billete">Composter mon billet</button>
+      <button type="button" class="btn btn-quiet" id="ticketDownload" hidden data-fr="Télécharger mon billet" data-es="Descargar mi billete">Télécharger mon billet</button>
+    </div>
+    <p class="form-status" id="rsvpStatus" role="status" aria-live="polite"></p>
+  </div>
 </section>
 
-<footer class="site-footer">
-    <p class="footer-hashtag">#NathalyaEtPierre2027</p>
-    <p class="footer-contact"
-       data-fr="Une question ? Écrivez-nous : "
-       data-es="¿Alguna pregunta? Escríbenos: ">
-        Une question ? Écrivez-nous :
-        <a href="/cdn-cgi/l/email-protection#c8b8a1adbabaadfbfef8fc88afa5a9a1a4e6aba7a5"><span class="__cf_email__" data-cfemail="1f6f767a6d6d7a2c292f2b5f78727e7673317c7072">[email&#160;protected]</span></a>
+<!-- ============ 5. EL MAPA ============ -->
+<section class="tab" id="mapa" data-tab="mapa" hidden>
+  <header class="interlude">
+    <h1 class="script" data-fr="La carte" data-es="El mapa">La carte</h1>
+    <p class="caps-line" data-fr="La France de Pierre, notre Espagne, l'Équateur de Nathalya"
+       data-es="La Francia de Pierre, nuestra España, el Ecuador de Nathalya">La France de Pierre, notre Espagne, l'Équateur de Nathalya</p>
+  </header>
+
+  <div class="wrap">
+    <div class="globe-grid">
+      <div class="globe-side">
+        <div class="chapters" id="chapters" role="group" aria-label="Chapitres"></div>
+        <article class="info-card" id="infoCard" aria-live="polite">
+          <img class="info-img" id="infoImg" alt="" hidden>
+          <div>
+            <p class="info-meta caps-line" id="infoMeta"></p>
+            <h2 id="infoTitle"></h2>
+            <p id="infoText"></p>
+            <p class="info-dist" id="infoDist"></p>
+          </div>
+        </article>
+
+        <div class="from-box">
+          <label for="fromCity" class="caps-line" data-fr="D'où partez-vous ?" data-es="¿Desde dónde viajas?">D'où partez-vous ?</label>
+          <select id="fromCity"></select>
+        </div>
+      </div>
+
+      <div class="globe-stage">
+        <div class="globe" id="globe" role="img" aria-label="Globe interactif">
+          <div class="globe-loader" id="globeLoader"><span></span></div>
+        </div>
+        <p class="globe-hint" data-fr="Faites tourner le globe du doigt. Touchez l'Équateur pour voir nos lieux préférés."
+           data-es="Gira el globo con el dedo. Toca Ecuador para ver nuestros lugares favoritos.">Faites tourner le globe du doigt. Touchez l'Équateur pour voir nos lieux préférés.</p>
+      </div>
+    </div>
+
+    <section class="explore" id="equateur" aria-labelledby="exploreTitle">
+      <h2 class="script" id="exploreTitle" data-fr="Prolonger le voyage en Équateur" data-es="Alargar el viaje por Ecuador">Prolonger le voyage en Équateur</h2>
+      <p class="lede" data-fr="Vous venez de loin : restez quelques jours de plus. Voici nos lieux préférés. Touchez-en un pour le voir sur la carte."
+         data-es="Venís de lejos: quedaos unos días más. Estos son nuestros lugares favoritos. Toca uno para verlo en el mapa.">Vous venez de loin : restez quelques jours de plus. Voici nos lieux préférés. Touchez-en un pour le voir sur la carte.</p>
+
+      <div class="filters" id="filters" role="group" aria-label="Régions"></div>
+      <div class="explore-grid">
+        <div class="map-wrap">
+          <div id="ecuadorMap" class="ecuador-map"></div>
+          <p class="map-fallback" id="mapFallback" hidden data-fr="La carte n'a pas pu se charger. La liste reste disponible."
+             data-es="El mapa no se ha podido cargar. La lista sigue disponible.">La carte n'a pas pu se charger. La liste reste disponible.</p>
+        </div>
+        <ul class="poi-list" id="poiList"></ul>
+      </div>
+
+      <h3 class="routes-title caps-line" data-fr="Itinéraires suggérés" data-es="Itinerarios sugeridos">Itinéraires suggérés</h3>
+      <div class="route-grid" id="routeGrid"></div>
+    </section>
+  </div>
+</section>
+
+<!-- ============ 6. VIAJE ============ -->
+<section class="tab" id="viaje" data-tab="viaje" hidden>
+  <header class="interlude">
+    <h1 class="script" data-fr="Le voyage" data-es="El viaje">Le voyage</h1>
+    <p class="caps-line" data-fr="Tout pour arriver jusqu'à nous" data-es="Todo para llegar hasta nosotros">Tout pour arriver jusqu'à nous</p>
+  </header>
+
+  <div class="wrap">
+    <div class="travel-cols">
+      <article>
+        <h2 data-fr="Depuis l'Espagne" data-es="Desde España">Depuis l'Espagne</h2>
+        <p data-fr="Des vols directs relient Madrid à Quito, en 11 h environ." data-es="Hay vuelos directos de Madrid a Quito, de unas 11 h.">Des vols directs relient Madrid à Quito, en 11 h environ.</p>
+      </article>
+      <article>
+        <h2 data-fr="Depuis la France" data-es="Desde Francia">Depuis la France</h2>
+        <p data-fr="En général une escale, par Madrid ou Amsterdam. Comptez 14 à 16 h de trajet." data-es="Normalmente con una escala, en Madrid o Ámsterdam. Contad entre 14 y 16 h de viaje.">En général une escale, par Madrid ou Amsterdam. Comptez 14 à 16 h de trajet.</p>
+      </article>
+      <article>
+        <h2 data-fr="Arrivée" data-es="Llegada">Arrivée</h2>
+        <p data-fr="Aéroport international Mariscal Sucre (UIO), à environ 45 min du centre de Quito. En août, il est 7 h de moins qu'en France et en Espagne."
+           data-es="Aeropuerto Internacional Mariscal Sucre (UIO), a unos 45 min del centro de Quito. En agosto son 7 horas menos que en España y Francia.">Aéroport international Mariscal Sucre (UIO), à environ 45 min du centre de Quito. En août, il est 7 h de moins qu'en France et en Espagne.</p>
+      </article>
+    </div>
+
+    <div class="travel-pending">
+      <article>
+        <h2 data-fr="Transferts" data-es="Traslados">Transferts</h2>
+        <p data-fr="Les trajets vers l'église et Il Casale seront précisés ici." data-es="Los traslados a la iglesia y a Il Casale se indicarán aquí.">Les trajets vers l'église et Il Casale seront précisés ici.</p>
+        <p class="placeholder">[Transferts]</p>
+      </article>
+      <article>
+        <h2 data-fr="Où dormir" data-es="Dónde dormir">Où dormir</h2>
+        <p data-fr="Notre sélection d'hôtels arrive bientôt." data-es="Nuestra selección de hoteles llegará pronto.">Notre sélection d'hôtels arrive bientôt.</p>
+        <p class="placeholder">[Hôtels conseillés]</p>
+      </article>
+    </div>
+
+    <h2 class="script center" data-fr="Bon à savoir" data-es="Conviene saber">Bon à savoir</h2>
+    <dl class="info-list">
+      <div class="info-item">
+        <dt data-fr="Formalités" data-es="Documentación">Formalités</dt>
+        <dd data-fr="Pas de visa pour un séjour touristique de 90 jours maximum. Passeport valable plus de 6 mois et billet retour exigés. Une assurance couvrant les frais médicaux est indispensable."
+            data-es="No hace falta visado para estancias turísticas de hasta 90 días. Pasaporte con más de 6 meses de validez y billete de vuelta. Es imprescindible un seguro que cubra gastos médicos.">Pas de visa pour un séjour touristique de 90 jours maximum. Passeport valable plus de 6 mois et billet retour exigés. Une assurance couvrant les frais médicaux est indispensable.</dd>
+      </div>
+      <div class="info-item">
+        <dt data-fr="Sécurité" data-es="Seguridad">Sécurité</dt>
+        <dd data-fr="Quito, les Andes, Cuenca et les Galápagos se visitent sereinement en restant prudents. Plusieurs provinces de la côte sont aujourd'hui déconseillées : consultez les conseils officiels avant de réserver."
+            data-es="Quito, los Andes, Cuenca y Galápagos se visitan con tranquilidad tomando precauciones. Varias provincias de la costa están desaconsejadas: consultad las recomendaciones oficiales antes de reservar.">Quito, les Andes, Cuenca et les Galápagos se visitent sereinement en restant prudents. Plusieurs provinces de la côte sont aujourd'hui déconseillées : consultez les conseils officiels avant de réserver.</dd>
+      </div>
+      <div class="info-item">
+        <dt data-fr="Santé" data-es="Salud">Santé</dt>
+        <dd data-fr="Rien de particulier pour Quito et les Andes. Pour l'Amazonie, la vaccination contre la fièvre jaune est recommandée : voyez votre médecin ou un centre de vaccinations internationales."
+            data-es="Nada especial para Quito y los Andes. Para la Amazonía se recomienda la vacuna de la fiebre amarilla: consultad con vuestro médico o un Centro de Vacunación Internacional.">Rien de particulier pour Quito et les Andes. Pour l'Amazonie, la vaccination contre la fièvre jaune est recommandée : voyez votre médecin ou un centre de vaccinations internationales.</dd>
+      </div>
+      <div class="info-item">
+        <dt data-fr="Altitude" data-es="Altitud">Altitude</dt>
+        <dd data-fr="Quito est à 2 850 m. Les deux premiers jours, buvez beaucoup d'eau et allez-y doucement."
+            data-es="Quito está a 2 850 m. Los dos primeros días, bebed mucha agua y tomadlo con calma.">Quito est à 2 850 m. Les deux premiers jours, buvez beaucoup d'eau et allez-y doucement.</dd>
+      </div>
+      <div class="info-item">
+        <dt data-fr="Climat en août" data-es="Clima en agosto">Climat en août</dt>
+        <dd data-fr="Saison sèche dans les Andes : journées ensoleillées, soirées fraîches. Prévoyez une veste légère."
+            data-es="Estación seca en los Andes: días soleados y noches frescas. Llevad una chaqueta ligera.">Saison sèche dans les Andes : journées ensoleillées, soirées fraîches. Prévoyez une veste légère.</dd>
+      </div>
+      <div class="info-item">
+        <dt data-fr="Monnaie" data-es="Moneda">Monnaie</dt>
+        <dd data-fr="Le dollar américain. Gardez des petites coupures, les billets de 50 et 100 $ sont souvent refusés."
+            data-es="El dólar estadounidense. Llevad billetes pequeños: los de 50 y 100 $ a menudo no se aceptan.">Le dollar américain. Gardez des petites coupures, les billets de 50 et 100 $ sont souvent refusés.</dd>
+      </div>
+      <div class="info-item">
+        <dt data-fr="Prises" data-es="Enchufes">Prises</dt>
+        <dd data-fr="Types A et B, 120 V. Pensez à un adaptateur." data-es="Tipos A y B, 120 V. No olvidéis un adaptador.">Types A et B, 120 V. Pensez à un adaptateur.</dd>
+      </div>
+      <div class="info-item">
+        <dt>Galápagos</dt>
+        <dd data-fr="Droit d'entrée au parc national à payer à l'arrivée, et carte de transit à prendre avant le vol, depuis Quito ou Guayaquil."
+            data-es="Tasa de entrada al parque nacional a pagar al llegar, y tarjeta de control de tránsito antes del vuelo, desde Quito o Guayaquil.">Droit d'entrée au parc national à payer à l'arrivée, et carte de transit à prendre avant le vol, depuis Quito ou Guayaquil.</dd>
+      </div>
+    </dl>
+
+    <p class="official">
+      <span data-fr="Conseils officiels, à relire avant de partir :" data-es="Recomendaciones oficiales, para revisar antes de viajar:">Conseils officiels, à relire avant de partir :</span>
+      <a href="https://www.diplomatie.gouv.fr/fr/information-par-pays/equateur/" target="_blank" rel="noopener">France Diplomatie</a>
+      <a href="https://www.exteriores.gob.es/es/ServiciosAlCiudadano/Paginas/Detalle-recomendaciones-de-viaje.aspx?trc=Ecuador" target="_blank" rel="noopener">Ministerio de Asuntos Exteriores</a>
     </p>
-    <p class="footer-note"
-       data-fr="Avec amour, Nathalya &amp; Pierre"
-       data-es="Con amor, Nathalya &amp; Pierre">
-        Avec amour, Nathalya &amp; Pierre
-    </p>
+
+    <p class="center"><a href="#mapa" class="btn btn-quiet" data-fr="Voir nos lieux préférés en Équateur" data-es="Ver nuestros lugares favoritos en Ecuador">Voir nos lieux préférés en Équateur</a></p>
+  </div>
+</section>
+
+<!-- ============ 7. FAQ ============ -->
+<section class="tab" id="faq" data-tab="faq" hidden>
+  <header class="interlude">
+    <h1 class="script" data-fr="Vos questions" data-es="Vuestras preguntas">Vos questions</h1>
+  </header>
+  <div class="wrap narrow">
+    <div class="faq">
+      <details>
+        <summary data-fr="Quel est le dress code ?" data-es="¿Cuál es el código de vestimenta?">Quel est le dress code ?</summary>
+        <p data-fr="Tenue chic et estivale. Les couleurs du mariage sont dans l'onglet « Le mariage », si vous voulez vous en inspirer."
+           data-es="Elegante y veraniego. Los colores de la boda están en «La boda», por si queréis inspiraros.">Tenue chic et estivale. Les couleurs du mariage sont dans l'onglet « Le mariage », si vous voulez vous en inspirer.</p>
+      </details>
+      <details>
+        <summary data-fr="Les enfants sont-ils invités ?" data-es="¿Están invitados los niños?">Les enfants sont-ils invités ?</summary>
+        <p class="placeholder">[À confirmer]</p>
+      </details>
+      <details>
+        <summary data-fr="Dans quelle langue sera la cérémonie ?" data-es="¿En qué idioma será la ceremonia?">Dans quelle langue sera la cérémonie ?</summary>
+        <p class="placeholder">[À confirmer]</p>
+      </details>
+      <details>
+        <summary data-fr="Comment rejoindre l'église et Il Casale ?" data-es="¿Cómo llegar a la iglesia y a Il Casale?">Comment rejoindre l'église et Il Casale ?</summary>
+        <p data-fr="Nous donnerons tous les détails dans l'onglet « Voyage » dès qu'ils seront fixés." data-es="Daremos todos los detalles en «Viaje» en cuanto estén cerrados.">Nous donnerons tous les détails dans l'onglet « Voyage » dès qu'ils seront fixés.</p>
+      </details>
+      <details>
+        <summary data-fr="Une liste de cadeaux ?" data-es="¿Hay lista de regalos?">Une liste de cadeaux ?</summary>
+        <p data-fr="Votre présence, après un si long voyage, est déjà le plus beau des cadeaux. Une cagnotte sera ouverte pour ceux qui le souhaitent."
+           data-es="Vuestra presencia, después de un viaje tan largo, ya es el mejor regalo. Habrá una hucha para quien lo desee.">Votre présence, après un si long voyage, est déjà le plus beau des cadeaux. Une cagnotte sera ouverte pour ceux qui le souhaitent.</p>
+      </details>
+      <details>
+        <summary data-fr="Peut-on prendre des photos ?" data-es="¿Se pueden hacer fotos?">Peut-on prendre des photos ?</summary>
+        <p class="placeholder">[À confirmer]</p>
+      </details>
+      <details>
+        <summary data-fr="Comment vous joindre ?" data-es="¿Cómo contactaros?">Comment vous joindre ?</summary>
+        <p><span data-fr="Écrivez-nous à" data-es="Escríbenos a">Écrivez-nous à</span> <a href="mailto:pierre3604@gmail.com">pierre3604@gmail.com</a></p>
+      </details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ LA ÚLTIMA PARADA ============ -->
+<footer class="last-stop">
+  <p class="script last-title">La última parada</p>
+  <p class="caps-line" data-fr="Il y a des voyages qui ont une destination. Et des voyages qui finissent par devenir une vie."
+     data-es="Hay viajes que tienen un destino. Y hay viajes que terminan convirtiéndose en una vida.">Il y a des voyages qui ont une destination. Et des voyages qui finissent par devenir une vie.</p>
+  <p class="last-mono">N &amp; P</p>
+  <p class="last-date">14 · 08 · 2027</p>
+  <a href="#rsvp" class="btn btn-cream" data-fr="Réserver ma place" data-es="Reservar mi asiento">Réserver ma place</a>
+  <p class="last-tag">#NathalyaEtPierre2027</p>
 </footer>
 
-<!-- Fenêtre modale : carte détaillée d'un pays (lieux à visiter) -->
-<div class="country-modal" id="countryModal">
-    <div class="country-modal-content">
-        <button type="button" class="country-modal-close" onclick="closeCountryModal()" aria-label="Fermer">&times;</button>
-        <h3 id="countryModalTitle"></h3>
-        <p class="country-modal-subtitle" id="countryModalSubtitle"></p>
-        <div id="countryDetailMap" class="country-detail-map"></div>
-    </div>
-</div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="globe-new.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="script.js"></script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
