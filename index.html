@@ -111,6 +111,13 @@
       </div>
     </article>
 
+    <figure class="window">
+      <div class="window-frame">
+        <img src="images/hero.jpeg" alt="La demande en mariage sur une plage de l'Algarve, en 2025" fetchpriority="high">
+      </div>
+      <figcaption data-fr="Algarve, 2025 : le jour de la demande" data-es="Algarve, 2025: el día de la pedida">Algarve, 2025 : le jour de la demande</figcaption>
+    </figure>
+
     <p class="caps-line home-phrase" data-fr="Certaines histoires ne sont pas faites pour s'arrêter avec l'été."
        data-es="Algunas historias no están hechas para terminar con el verano.">Certaines histoires ne sont pas faites pour s'arrêter avec l'été.</p>
 
@@ -140,7 +147,8 @@
   </header>
 
   <div class="wrap">
-    <ol class="rail">
+    <ol class="rail" id="rail">
+      <li class="rail-train" id="railTrain" aria-hidden="true"><svg class="loco"><use href="#loco"/></svg></li>
       <li class="station">
         <div class="station-text">
           <p class="station-when">2019 · Quito</p>
@@ -209,65 +217,67 @@
 <section class="tab" id="boda" data-tab="boda" hidden>
   <header class="interlude">
     <h1 class="script" data-fr="Le mariage" data-es="La boda">Le mariage</h1>
-    <p class="caps-line" data-fr="Samedi 14 août 2027, en Équateur" data-es="Sábado 14 de agosto de 2027, en Ecuador">Samedi 14 août 2027, en Équateur</p>
+    <p class="caps-line" data-fr="Samedi 14 août 2027, Quito" data-es="Sábado 14 de agosto de 2027, Quito">Samedi 14 août 2027, Quito</p>
   </header>
 
   <div class="wrap">
     <div class="venues">
       <article class="venue">
+        <svg class="venue-art" viewBox="0 0 320 170" role="img" aria-label="Illustration de l'église de Guápulo">
+          <g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M118 150V78h84v72"/><path d="M110 80l50-30 50 30"/>
+            <path d="M160 50V36M154 40h12"/>
+            <path d="M130 78c0-26 13-40 30-40s30 14 30 40" opacity=".55"/>
+            <path d="M148 150v-26a12 12 0 0 1 24 0v26"/><circle cx="160" cy="98" r="9"/>
+            <path d="M82 150V68h36M238 150V68h-36"/><path d="M82 68l18-22 18 22M238 68l-18-22-18 22"/>
+            <path d="M100 46V30M220 46V30"/><path d="M94 84h12v14H94zM214 84h12v14h-12z"/>
+            <path d="M20 150c30-30 50-34 62-34M300 150c-30-30-50-34-62-34" opacity=".45"/>
+            <path d="M10 150h300"/>
+          </g>
+        </svg>
         <p class="venue-kind caps-line" data-fr="La cérémonie" data-es="La ceremonia">La cérémonie</p>
-        <h2 class="placeholder">[Église]</h2>
+        <h2 data-fr="Église de Guápulo" data-es="Iglesia de Guápulo">Église de Guápulo</h2>
         <dl class="venue-facts">
-          <div><dt data-fr="Heure" data-es="Hora">Heure</dt><dd class="placeholder">[Heure]</dd></div>
-          <div><dt data-fr="Adresse" data-es="Dirección">Adresse</dt><dd class="placeholder">[Adresse]</dd></div>
+          <div><dt data-fr="Heure" data-es="Hora">Heure</dt><dd>15:00</dd></div>
+          <div><dt data-fr="Adresse" data-es="Dirección">Adresse</dt><dd>Santuario de Guápulo, Plaza de Guápulo, Quito</dd></div>
         </dl>
-        <a class="btn btn-quiet maps-btn" data-maps="" target="_blank" rel="noopener" hidden data-fr="Ouvrir dans Maps" data-es="Abrir en Maps">Ouvrir dans Maps</a>
+        <a class="btn btn-quiet" href="https://www.google.com/maps/search/?api=1&amp;query=Santuario+de+Gu%C3%A1pulo+Quito" target="_blank" rel="noopener" data-fr="Ouvrir dans Maps" data-es="Abrir en Maps">Ouvrir dans Maps</a>
       </article>
 
       <article class="venue venue-casale">
-        <svg class="casale" viewBox="0 0 320 170" role="img" aria-label="Illustration d'Il Casale">
-          <g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M70 150V70l90-34 90 34v80"/><path d="M60 72l100-40 100 40"/>
-            <path d="M92 150v-34a14 14 0 0 1 28 0v34M146 150v-40a14 14 0 0 1 28 0v40M200 150v-34a14 14 0 0 1 28 0v34"/>
-            <path d="M100 96h12v12h-12zM208 96h12v12h-12zM154 68h12v14h-12z"/>
-            <path d="M80 82h10M232 82h10M82 128h6M234 120h8M76 112h8" opacity=".5"/>
-            <path d="M30 150c2-30 4-56 8-80M38 70c-14-2-24 4-28 12M38 70c-6-10-16-14-26-12M38 70c8-10 20-12 28-6M38 70c12 0 20 6 22 14"/>
-            <path d="M290 150c-2-26-4-48-8-70M282 80c-12-4-22 0-28 8M282 80c-4-10-12-16-22-16M282 80c8-8 20-8 26-2M282 80c10 2 18 8 18 16"/>
-            <path d="M10 150h300"/><path d="M100 22l4 4M220 22l-4 4M160 10v6" opacity=".55"/>
-          </g>
-        </svg>
-        <p class="venue-kind caps-line" data-fr="La célébration" data-es="La celebración">La célébration</p>
+        <figure class="venue-photo" id="casalePhoto">
+          <!-- Pour afficher une vraie photo : déposer images/il-casale.jpg dans le dépôt. Sinon l'illustration reste. -->
+          <img src="images/il-casale.jpg" alt="Il Casale" loading="lazy" onload="this.parentNode.classList.add('has-photo')" onerror="this.remove()">
+          <svg class="venue-art casale" viewBox="0 0 320 170" role="img" aria-label="Illustration d'Il Casale">
+            <g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M70 150V70l90-34 90 34v80"/><path d="M60 72l100-40 100 40"/>
+              <path d="M92 150v-34a14 14 0 0 1 28 0v34M146 150v-40a14 14 0 0 1 28 0v40M200 150v-34a14 14 0 0 1 28 0v34"/>
+              <path d="M100 96h12v12h-12zM208 96h12v12h-12zM154 68h12v14h-12z"/>
+              <path d="M80 82h10M232 82h10M82 128h6M234 120h8M76 112h8" opacity=".5"/>
+              <path d="M30 150c2-30 4-56 8-80M38 70c-14-2-24 4-28 12M38 70c-6-10-16-14-26-12M38 70c8-10 20-12 28-6M38 70c12 0 20 6 22 14"/>
+              <path d="M290 150c-2-26-4-48-8-70M282 80c-12-4-22 0-28 8M282 80c-4-10-12-16-22-16M282 80c8-8 20-8 26-2M282 80c10 2 18 8 18 16"/>
+              <path d="M10 150h300"/><path d="M100 22l4 4M220 22l-4 4M160 10v6" opacity=".55"/>
+            </g>
+          </svg>
+        </figure>
+        <p class="venue-kind caps-line" data-fr="Le cocktail et la fête" data-es="El cóctel y la fiesta">Le cocktail et la fête</p>
         <h2>Il Casale</h2>
         <dl class="venue-facts">
-          <div><dt data-fr="Heure" data-es="Hora">Heure</dt><dd class="placeholder">[Heure]</dd></div>
-          <div><dt data-fr="Adresse" data-es="Dirección">Adresse</dt><dd class="placeholder">[Adresse]</dd></div>
+          <div><dt data-fr="Heure" data-es="Hora">Heure</dt><dd>17:00</dd></div>
+          <div><dt data-fr="Adresse" data-es="Dirección">Adresse</dt><dd>El Sauce E28C y vía km 12½, Av. Oswaldo Guayasamín, 170184 Quito</dd></div>
         </dl>
-        <a class="btn btn-quiet maps-btn" data-maps="" target="_blank" rel="noopener" hidden data-fr="Ouvrir dans Maps" data-es="Abrir en Maps">Ouvrir dans Maps</a>
+        <a class="btn btn-quiet" href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x91d5913ae5133e05:0xc54ce529547a5c4a" target="_blank" rel="noopener" data-fr="Ouvrir dans Maps" data-es="Abrir en Maps">Ouvrir dans Maps</a>
       </article>
     </div>
 
     <section class="program" aria-labelledby="progTitle">
       <h2 class="script" id="progTitle" data-fr="Le programme" data-es="El programa">Le programme</h2>
       <ol class="program-line">
-        <li><span class="stop"></span><span class="prog-time placeholder">[Heure]</span><span class="prog-what" data-fr="Cérémonie" data-es="Ceremonia">Cérémonie</span></li>
-        <li><span class="stop"></span><span class="prog-time placeholder">[Heure]</span><span class="prog-what" data-fr="Célébration à Il Casale" data-es="Celebración en Il Casale">Célébration à Il Casale</span></li>
-        <li><span class="stop"></span><span class="prog-time">…</span><span class="prog-what script-sm">La última parada</span></li>
+        <li><span class="stop"></span><span class="prog-time">15:00</span><span class="prog-what" data-fr="Cérémonie, église de Guápulo" data-es="Ceremonia, iglesia de Guápulo">Cérémonie, église de Guápulo</span></li>
+        <li><span class="stop"></span><span class="prog-time">17:00</span><span class="prog-what" data-fr="Cocktail à Il Casale" data-es="Cóctel en Il Casale">Cocktail à Il Casale</span><span class="prog-what script-sm">La última parada</span></li>
       </ol>
-      <p class="muted center" data-fr="Le programme détaillé arrive bientôt, ici et par email."
-         data-es="El programa detallado llegará pronto, aquí y por correo.">Le programme détaillé arrive bientôt, ici et par email.</p>
-    </section>
-
-    <section class="dresscode" aria-labelledby="dressTitle">
-      <h2 class="script" id="dressTitle">Dress code</h2>
-      <p data-fr="Tenue chic et estivale. Si vous cherchez l'inspiration, voici les couleurs de notre mariage."
-         data-es="Elegante y veraniego. Si buscáis inspiración, estos son los colores de nuestra boda.">Tenue chic et estivale. Si vous cherchez l'inspiration, voici les couleurs de notre mariage.</p>
-      <ul class="swatches">
-        <li><span style="background:#949C6F"></span><span data-fr="Sauge" data-es="Salvia">Sauge</span></li>
-        <li><span style="background:#6A7550"></span><span data-fr="Olive" data-es="Oliva">Olive</span></li>
-        <li><span style="background:#E6DDD3"></span><span data-fr="Lin" data-es="Lino">Lin</span></li>
-        <li><span style="background:#637E84"></span><span data-fr="Bleu cendré" data-es="Azul ceniza">Bleu cendré</span></li>
-        <li><span style="background:#8B5A2B"></span><span>Caramel</span></li>
-      </ul>
+      <p class="muted center" data-fr="Pas de dress code : venez comme vous vous sentez bien. L'important, c'est que vous soyez là."
+         data-es="No hay código de vestimenta: venid como os sintáis a gusto. Lo importante es que estéis.">Pas de dress code : venez comme vous vous sentez bien. L'important, c'est que vous soyez là.</p>
     </section>
   </div>
 </section>
@@ -278,7 +288,7 @@
     <h1 class="script" data-fr="Réservez votre place" data-es="Reserva tu asiento">Réservez votre place</h1>
     <p class="caps-line">
       <span data-fr="Réponse souhaitée avant le" data-es="Responde antes del">Réponse souhaitée avant le</span>
-      <span class="placeholder">[Date limite]</span>
+      <span data-fr="31 mai 2027" data-es="31 de mayo de 2027">31 mai 2027</span>
     </p>
   </header>
 
@@ -359,6 +369,16 @@
       <button type="button" class="btn btn-quiet" id="ticketDownload" hidden data-fr="Télécharger mon billet" data-es="Descargar mi billete">Télécharger mon billet</button>
     </div>
     <p class="form-status" id="rsvpStatus" role="status" aria-live="polite"></p>
+    <p class="mail-fallback" id="mailFallback" hidden><a class="btn btn-quiet" id="mailFallbackLink" href="#" data-fr="Envoyer ma réponse par email" data-es="Enviar mi respuesta por correo">Envoyer ma réponse par email</a></p>
+
+    <div class="contact-row">
+      <p class="caps-line" data-fr="Une question ? Écrivez-nous" data-es="¿Alguna pregunta? Escríbenos">Une question ? Écrivez-nous</p>
+      <div class="contact-links">
+        <a class="wa" href="https://wa.me/34681860474" target="_blank" rel="noopener"><span class="wa-name">Pierre</span><span class="wa-num">+34 681 860 474</span></a>
+        <a class="wa" href="https://wa.me/34625451595" target="_blank" rel="noopener"><span class="wa-name">Nathalya</span><span class="wa-num">+34 625 45 15 95</span></a>
+        <a class="wa" href="mailto:pierre3604@gmail.com"><span class="wa-name">Email</span><span class="wa-num">pierre3604@gmail.com</span></a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -447,8 +467,7 @@
     <div class="travel-pending">
       <article>
         <h2 data-fr="Transferts" data-es="Traslados">Transferts</h2>
-        <p data-fr="Les trajets vers l'église et Il Casale seront précisés ici." data-es="Los traslados a la iglesia y a Il Casale se indicarán aquí.">Les trajets vers l'église et Il Casale seront précisés ici.</p>
-        <p class="placeholder">[Transferts]</p>
+        <p data-fr="Cérémonie à 15:00 à l'église de Guápulo, puis cocktail à 17:00 à Il Casale, sur l'avenue Oswaldo Guayasamín. Nous préciserons ici comment aller de l'une à l'autre." data-es="Ceremonia a las 15:00 en la iglesia de Guápulo y cóctel a las 17:00 en Il Casale, en la avenida Oswaldo Guayasamín. Aquí indicaremos cómo ir de una a otra.">Cérémonie à 15:00 à l'église de Guápulo, puis cocktail à 17:00 à Il Casale, sur l'avenue Oswaldo Guayasamín. Nous préciserons ici comment aller de l'une à l'autre.</p>
       </article>
       <article>
         <h2 data-fr="Où dormir" data-es="Dónde dormir">Où dormir</h2>
@@ -518,21 +537,21 @@
   <div class="wrap narrow">
     <div class="faq">
       <details>
-        <summary data-fr="Quel est le dress code ?" data-es="¿Cuál es el código de vestimenta?">Quel est le dress code ?</summary>
-        <p data-fr="Tenue chic et estivale. Les couleurs du mariage sont dans l'onglet « Le mariage », si vous voulez vous en inspirer."
-           data-es="Elegante y veraniego. Los colores de la boda están en «La boda», por si queréis inspiraros.">Tenue chic et estivale. Les couleurs du mariage sont dans l'onglet « Le mariage », si vous voulez vous en inspirer.</p>
+        <summary data-fr="Y a-t-il un dress code ?" data-es="¿Hay código de vestimenta?">Y a-t-il un dress code ?</summary>
+        <p data-fr="Il n'y a pas de dress code. Venez comme vous vous sentez bien."
+           data-es="No hay código de vestimenta. Venid como os sintáis a gusto.">Il n'y a pas de dress code. Venez comme vous vous sentez bien.</p>
       </details>
       <details>
         <summary data-fr="Les enfants sont-ils invités ?" data-es="¿Están invitados los niños?">Les enfants sont-ils invités ?</summary>
-        <p class="placeholder">[À confirmer]</p>
+        <p data-fr="Oui, les enfants sont les bienvenus." data-es="Sí, los niños son bienvenidos.">Oui, les enfants sont les bienvenus.</p>
       </details>
       <details>
         <summary data-fr="Dans quelle langue sera la cérémonie ?" data-es="¿En qué idioma será la ceremonia?">Dans quelle langue sera la cérémonie ?</summary>
-        <p class="placeholder">[À confirmer]</p>
+        <p data-fr="En espagnol et en français." data-es="En español y en francés.">En espagnol et en français.</p>
       </details>
       <details>
         <summary data-fr="Comment rejoindre l'église et Il Casale ?" data-es="¿Cómo llegar a la iglesia y a Il Casale?">Comment rejoindre l'église et Il Casale ?</summary>
-        <p data-fr="Nous donnerons tous les détails dans l'onglet « Voyage » dès qu'ils seront fixés." data-es="Daremos todos los detalles en «Viaje» en cuanto estén cerrados.">Nous donnerons tous les détails dans l'onglet « Voyage » dès qu'ils seront fixés.</p>
+        <p data-fr="La cérémonie est à 15:00 à l'église de Guápulo, le cocktail à 17:00 à Il Casale. Les détails pour s'y rendre seront dans l'onglet « Voyage »." data-es="La ceremonia es a las 15:00 en la iglesia de Guápulo y el cóctel a las 17:00 en Il Casale. Los detalles para llegar estarán en «Viaje».">La cérémonie est à 15:00 à l'église de Guápulo, le cocktail à 17:00 à Il Casale. Les détails pour s'y rendre seront dans l'onglet « Voyage ».</p>
       </details>
       <details>
         <summary data-fr="Une liste de cadeaux ?" data-es="¿Hay lista de regalos?">Une liste de cadeaux ?</summary>
@@ -541,11 +560,15 @@
       </details>
       <details>
         <summary data-fr="Peut-on prendre des photos ?" data-es="¿Se pueden hacer fotos?">Peut-on prendre des photos ?</summary>
-        <p class="placeholder">[À confirmer]</p>
+        <p data-fr="Oui, prenez-en autant que vous voulez, et partagez-les avec #NathalyaEtPierre2027." data-es="Sí, haced todas las que queráis y compartidlas con #NathalyaEtPierre2027.">Oui, prenez-en autant que vous voulez, et partagez-les avec #NathalyaEtPierre2027.</p>
       </details>
       <details>
         <summary data-fr="Comment vous joindre ?" data-es="¿Cómo contactaros?">Comment vous joindre ?</summary>
-        <p><span data-fr="Écrivez-nous à" data-es="Escríbenos a">Écrivez-nous à</span> <a href="mailto:pierre3604@gmail.com">pierre3604@gmail.com</a></p>
+        <div class="contact-links faq-contacts">
+          <a class="wa" href="https://wa.me/34681860474" target="_blank" rel="noopener"><span class="wa-name">WhatsApp Pierre</span><span class="wa-num">+34 681 860 474</span></a>
+          <a class="wa" href="https://wa.me/34625451595" target="_blank" rel="noopener"><span class="wa-name">WhatsApp Nathalya</span><span class="wa-num">+34 625 45 15 95</span></a>
+          <a class="wa" href="mailto:pierre3604@gmail.com"><span class="wa-name">Email</span><span class="wa-num">pierre3604@gmail.com</span></a>
+        </div>
       </details>
     </div>
   </div>

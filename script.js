@@ -18,9 +18,16 @@
 'use strict';
 
 /* ---------- 1. Réglages ---------- */
-// Heure de la cérémonie, heure de l'Équateur (UTC-5). À mettre à jour quand l'horaire est fixé.
-const CEREMONY = new Date('2027-08-14T16:00:00-05:00');
-const RSVP_ENDPOINT = 'https://formsubmit.co/ajax/pierre3604@gmail.com';
+// Cérémonie à l'église de Guápulo, 15:00 heure de Quito (UTC-5)
+const CEREMONY = new Date('2027-08-14T15:00:00-05:00');
+
+// RSVP : les réponses partent vers deux destinations.
+// 1) Google Sheets (+ email automatique) : collez ici l'URL de l'application Web Apps Script
+//    (elle se termine par /exec). Voir le fichier google-apps-script.gs.
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwgAha_VbNCTQdsaJqCtQCY7lP25JC2wMlMT52qsIUu4FzLGxOnyXA_3jwIUVFsGwWO/exec';
+// 2) Email via FormSubmit (le premier envoi demande une activation dans Gmail).
+const RSVP_EMAIL = 'pierre3604@gmail.com';
+const RSVP_ENDPOINT = 'https://formsubmit.co/ajax/' + RSVP_EMAIL;
 const TABS = ['inicio', 'ruta', 'boda', 'rsvp', 'mapa', 'viaje', 'faq'];
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -42,7 +49,7 @@ const T = {
     sending: 'Compostage en cours…',
     okYes: '¡Gracias! Votre billet est composté. On a hâte de vous voir en Équateur.',
     okNo: 'Merci de nous avoir prévenus. Vous nous manquerez.',
-    err: 'L\'envoi n\'a pas fonctionné. Réessayez, ou écrivez-nous à pierre3604@gmail.com.',
+    err: 'L\'envoi automatique n\'a pas fonctionné. Utilisez le bouton ci-dessous pour nous envoyer votre réponse par email.',
     checkFields: 'Vérifiez les champs signalés en caramel.',
     passenger: 'Passager', classYes: 'Je viens', classNo: 'Je ne pourrai pas venir',
     stamp: 'Confirmé', globeLabel: 'Globe interactif : la France de Pierre, notre Espagne, l\'Équateur de Nathalya'
@@ -58,7 +65,7 @@ const T = {
     sending: 'Validando…',
     okYes: '¡Gracias! Tu billete está validado. Tenemos muchas ganas de verte en Ecuador.',
     okNo: 'Gracias por avisarnos. Te echaremos de menos.',
-    err: 'No se ha podido enviar. Inténtalo de nuevo o escríbenos a pierre3604@gmail.com.',
+    err: 'El envío automático no ha funcionado. Usa el botón de abajo para mandarnos tu respuesta por correo.',
     checkFields: 'Revisa los campos señalados en caramelo.',
     passenger: 'Pasajero', classYes: 'Voy', classNo: 'No podré ir',
     stamp: 'Confirmado', globeLabel: 'Globo interactivo: la Francia de Pierre, nuestra España, el Ecuador de Nathalya'
@@ -251,6 +258,28 @@ function initNav() {
   window.addEventListener('hashchange', () => showTab(location.hash));
   // Cliquer sur la gare déjà active ferme simplement le menu
   $$('.line a').forEach(a => a.addEventListener('click', () => { if (a.getAttribute('href') === location.hash) showTab(location.hash); }));
+}
+
+/* ---------- Le train qui avance sur le rail de « Notre route » ---------- */
+function initRailTrain() {
+  const rail = $('#rail'), train = $('#railTrain');
+  if (!rail || !train) return;
+  let ticking = false;
+  const place = () => {
+    ticking = false;
+    if (rail.closest('[hidden]')) return;
+    const r = rail.getBoundingClientRect();
+    const h = train.offsetHeight;
+    const travel = Math.max(0, r.height - h);
+    // le train suit le milieu de l'écran
+    const p = Math.min(1, Math.max(0, (innerHeight * 0.5 - r.top - h / 2) / travel));
+    train.style.transform = `translateY(${(p * travel).toFixed(1)}px)`;
+  };
+  const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(place); } };
+  addEventListener('scroll', req, { passive: true });
+  addEventListener('resize', req);
+  addEventListener('hashchange', () => setTimeout(place, 50));
+  place();
 }
 
 /* ---------- 6. Compte à rebours ---------- */
@@ -681,10 +710,15 @@ const Explorer = (function () {
     if (!box || box.closest('[hidden]')) return;          // attendre que l'onglet soit visible
     if (typeof L === 'undefined') { $('#mapFallback').hidden = false; return; }
     map = L.map(box, { scrollWheelZoom: false });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd', maxZoom: 18
-    }).addTo(map);
+    // Fonds de carte gratuits, sans clé d'API
+    const plan = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom: 19
+    });
+    const relief = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri', maxZoom: 18
+    });
+    relief.addTo(map);
+    L.control.layers({ [LANG === 'es' ? 'Relieve' : 'Relief']: relief, [LANG === 'es' ? 'Plano' : 'Plan']: plan }, null, { position: 'topright' }).addTo(map);
     map.on('focus', () => map.scrollWheelZoom.enable());
     map.on('blur', () => map.scrollWheelZoom.disable());
     POIS.forEach(p => {
@@ -861,22 +895,35 @@ function initRsvp() {
       'Régime / allergies': yes ? v('allergies') : '', 'Chanson': yes ? v('chanson') : '',
       'Adresse postale': v('adresse'), 'Message': v('message'), 'Langue': LANG.toUpperCase()
     };
-    btn.disabled = true; setStatus('sending');
+    btn.disabled = true; setStatus('sending'); $('#mailFallback').hidden = true;
+    const row = {
+      date: new Date().toISOString(), billet: no, presence: yes ? 'Oui' : 'Non', nom: v('nom'), email: v('email'),
+      ville: v('from'), personnes: yes ? v('personnes') : '0', accompagnants: yes ? v('accompagnants') : '',
+      regime: yes ? v('allergies') : '', chanson: yes ? v('chanson') : '', adresse: v('adresse'), message: v('message'), langue: LANG.toUpperCase()
+    };
+
+    // 1) Google Sheets (réponse opaque : on considère l'envoi réussi si la requête part)
+    const toSheets = SHEETS_URL ? fetch(SHEETS_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(row) }).then(() => true) : Promise.reject(new Error('no sheets'));
+    // 2) Email via FormSubmit
     const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 15000);
-    try {
-      const res = await fetch(RSVP_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data), signal: ctrl.signal });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || String(json.success) === 'false') throw new Error('send');
+    const toMail = fetch(RSVP_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data), signal: ctrl.signal })
+      .then(async res => { const j = await res.json().catch(() => ({})); if (!res.ok || String(j.success) === 'false') throw new Error('mail'); return true; });
+
+    const [sh, ml] = await Promise.allSettled([toSheets, toMail]);
+    clearTimeout(timer); btn.disabled = false;
+    if (sh.status === 'fulfilled' || ml.status === 'fulfilled') {
       $('#ticketNo').textContent = no;
       lastTicket = { no, yes, name: v('nom'), from: v('from'), pax: yes ? v('personnes') : '0' };
       form.classList.add('done');
       requestAnimationFrame(() => $('#stamp').classList.add('on'));
       $('#ticketDownload').hidden = false;
       setStatus(yes ? 'ok-yes' : 'ok-no');
-    } catch (err) {
+    } else {
+      // Dernier recours : l'invité envoie lui-même l'email, déjà rempli
+      const body = Object.entries(data).filter(([k]) => !k.startsWith('_')).map(([k, val]) => `${k} : ${val}`).join('\n');
+      $('#mailFallbackLink').href = `mailto:${RSVP_EMAIL}?subject=${encodeURIComponent(data._subject)}&body=${encodeURIComponent(body)}`;
+      $('#mailFallback').hidden = false;
       setStatus('err');
-    } finally {
-      clearTimeout(timer); btn.disabled = false;
     }
   });
 
@@ -940,6 +987,7 @@ function start() {
   LANG = detectLang();
   initNav();
   initCountdown();
+  initRailTrain();
   MapTab.init();
   Globe.init();
   initRsvp();
